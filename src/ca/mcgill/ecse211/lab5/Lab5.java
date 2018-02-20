@@ -67,6 +67,19 @@ public class Lab5 {
 
 		// perform the light sensor localization
 		lightLocatizer.localize();
+		
+		/*
+		 * @To Do
+		 * 
+		 * Use Navigation to navigate to the lower lefthand corner
+		 * 
+		 * Enter designated since we know LL and Upper Right
+		 * Search for cube in designated area (Possible methods snaking the area?)
+		 * 			- When you see a block stop and check its color using Color Calibration
+		 * 			- If its not the color use the avoidance go around it and carry on with the search
+		 * 
+		 * 
+		 */
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE)
 			;
