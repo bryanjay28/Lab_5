@@ -44,43 +44,55 @@ public class Lab5 {
 			// ask the user whether the motors should drive in a square or float
 			lcd.drawString("<      | 	   >", 0, 0);
 			lcd.drawString("       |        ", 0, 1);
-			lcd.drawString("	 Start	    ", 0, 2);
-			lcd.drawString(" 	   |  	    ", 0, 3);
+			lcd.drawString(" Colour|Field   ", 0, 2);
+			lcd.drawString(" Sensor|Class   ", 0, 3);
 			lcd.drawString("       |        ", 0, 4);
 
 			buttonChoice = Button.waitForAnyPress(); // Record choice (left or right press)
 		} while (buttonChoice != Button.ID_LEFT && buttonChoice != Button.ID_RIGHT);
 
-		// Start odometer and display threads and correction Threads.
-		Thread odoThread = new Thread(odometer);
-		odoThread.start();
+		if (buttonChoice == Button.ID_LEFT) {
+			lcd.clear();
 
-		Thread odoDisplayThread = new Thread(odometryDisplay);
-		odoDisplayThread.start();
+			// gotta fix the colour callibration to work independently for the colour test
 
-		// Create ultrasonic and light localizer objects.
-		USLocalizer USLocalizer = new USLocalizer(odometer, leftMotor, rightMotor, usDistance, startingCorner);
-		LightLocalizer lightLocatizer = new LightLocalizer(odometer, leftMotor, rightMotor);
+			ColourCallibration colourCallibration = new ColourCallibration();
 
-		// perform the ultrasonic localization
-		USLocalizer.localize();
+			Thread colourCallibrationThread = new Thread(colourCallibration);
+			colourCallibration.start();
 
-		// perform the light sensor localization
-		lightLocatizer.localize();
-		
-		/*
-		 * @To Do
-		 * 
-		 * Use Navigation to navigate to the lower lefthand corner
-		 * 
-		 * Enter designated since we know LL and Upper Right
-		 * Search for cube in designated area (Possible methods snaking the area?)
-		 * 			- When you see a block stop and check its color using Color Calibration
-		 * 			- If its not the color use the avoidance go around it and carry on with the search
-		 * 
-		 * 
-		 */
+		} else {
 
+			// Start odometer and display threads and correction Threads.
+			Thread odoThread = new Thread(odometer);
+			odoThread.start();
+
+			Thread odoDisplayThread = new Thread(odometryDisplay);
+			odoDisplayThread.start();
+
+			// Create ultrasonic and light localizer objects.
+			USLocalizer USLocalizer = new USLocalizer(odometer, leftMotor, rightMotor, usDistance, startingCorner);
+			LightLocalizer lightLocatizer = new LightLocalizer(odometer, leftMotor, rightMotor);
+
+			// perform the ultrasonic localization
+			USLocalizer.localize();
+
+			// perform the light sensor localization
+			lightLocatizer.localize();
+
+			/*
+			 * @To Do
+			 * 
+			 * Use Navigation to navigate to the lower lefthand corner
+			 * 
+			 * Enter designated since we know LL and Upper Right Search for cube in
+			 * designated area (Possible methods snaking the area?) - When you see a block
+			 * stop and check its color using Color Calibration - If its not the color use
+			 * the avoidance go around it and carry on with the search
+			 * 
+			 * 
+			 */
+		}
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE)
 			;
 		System.exit(0);

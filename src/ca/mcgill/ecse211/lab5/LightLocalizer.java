@@ -18,6 +18,8 @@ public class LightLocalizer {
 	// Instantiat the EV3 Color Sensor
 	private static final EV3ColorSensor lightSensor = new EV3ColorSensor(LocalEV3.get().getPort("S1"));
 	private float sample;
+	private float prevSample;
+	private float deltaSample;
 
 	private SensorMode idColour;
 
@@ -28,6 +30,7 @@ public class LightLocalizer {
 		this.odometer = odometer;
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
+		prevSample = 0;
 
 		idColour = lightSensor.getRedMode(); // set the sensor light to red
 		lineData = new double[4];
@@ -54,13 +57,15 @@ public class LightLocalizer {
 			rightMotor.backward();
 
 			sample = fetchSample();
-
-			if (sample < 0.38) {
+			deltaSample = sample - prevSample;
+			if (deltaSample < 0.15) {
 
 				lineData[index] = odometer.getXYT()[2];
 				Sound.beepSequenceUp();
 				index++;
 			}
+			
+			prevSample = sample;
 		}
 
 		leftMotor.stop(true);
@@ -106,14 +111,17 @@ public class LightLocalizer {
 
 		// get sample
 		sample = fetchSample();
-
+		
 		// move forward past the origin until light sensor sees the line
-		while (sample > 0.38) {
+		while (Math.abs(deltaSample) > 0.15) {
 			sample = fetchSample();
+			deltaSample = sample - prevSample;
+			prevSample = sample;
+			
 			leftMotor.forward();
 			rightMotor.forward();
-
 		}
+		
 		leftMotor.stop(true);
 		rightMotor.stop();
 		Sound.beep();

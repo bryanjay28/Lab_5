@@ -1,5 +1,5 @@
 package ca.mcgill.ecse211.lab5;
 
-public class colorCalibration {
+public class SearchAndLocalize {
 
 }
