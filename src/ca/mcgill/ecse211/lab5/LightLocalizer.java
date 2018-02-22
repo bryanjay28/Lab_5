@@ -47,7 +47,7 @@ public class LightLocalizer {
 		leftMotor.setSpeed(ROTATION_SPEED);
 		rightMotor.setSpeed(ROTATION_SPEED);
 
-		// ensure that we are close to origin before rotating
+		// ensure that we are at the (1, 1) point (in unit coordinates)
 		moveToOneOne();
 
 		// Scan all four lines and record our angle

@@ -17,13 +17,15 @@ public class Lab5 {
 	private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 	private static final TextLCD lcd = LocalEV3.get().getTextLCD();
 	private static final Port usPort = LocalEV3.get().getPort("S3");
+
+	// Single navigation instance used by all classes
 	private static Navigation navigation;
 
 	// Set vehicle constants
 	public static final double WHEEL_RAD = 2.1;
 	public static final double TRACK = 15.79;
 	private static int startingCorner = 0;
-	
+
 	// Constants for part 2
 	private static double lowerLeftX, lowerLeftY;
 	private static double upperRightX, upperRightY;
@@ -42,7 +44,7 @@ public class Lab5 {
 		SensorModes ultrasonicSensor = new EV3UltrasonicSensor(usPort);
 		// usDistance provides samples from this instance
 		SampleProvider usDistance = ultrasonicSensor.getMode("Distance");
-		
+
 		navigation = new Navigation(odometer, leftMotor, rightMotor);
 
 		do {
@@ -65,7 +67,7 @@ public class Lab5 {
 
 		Thread colourCalibrationThread = new Thread(colourCalibration);
 		colourCalibration.start();
-		
+
 		buttonChoice = 0;
 		while (buttonChoice == 0) {
 			buttonChoice = Button.waitForAnyPress();
@@ -79,22 +81,27 @@ public class Lab5 {
 		odoDisplayThread.start();
 
 		// Create ultrasonic and light localizer objects.
-		USLocalizer USLocalizer = new USLocalizer(odometer, leftMotor, rightMotor, usDistance, startingCorner, navigation);
+		USLocalizer USLocalizer = new USLocalizer(odometer, leftMotor, rightMotor, usDistance, startingCorner,
+				navigation);
 		LightLocalizer lightLocatizer = new LightLocalizer(odometer, leftMotor, rightMotor, navigation);
-		
+
 		// perform the ultrasonic localization
 		USLocalizer.localize();
 
 		// perform the light sensor localization
 		lightLocatizer.localize();
+
 		
+		// Modified just before executing and loading the code on the machine
+		// Replace the 0 by the number of tiles representing the position
 		lowerLeftX = 0 * USLocalizer.getTileSize();
 		lowerLeftY = 0 * USLocalizer.getTileSize();
 		upperRightX = 0 * USLocalizer.getTileSize();
 		upperRightY = 0 * USLocalizer.getTileSize();
 		targetBlock = 1;
 
-		SearchAndLocalize searcher = new SearchAndLocalize(lowerLeftX, lowerLeftY, upperRightX, upperRightY, targetBlock, navigation, colourCalibration);
+		SearchAndLocalize searcher = new SearchAndLocalize(lowerLeftX, lowerLeftY, upperRightX, upperRightY,
+				targetBlock, navigation, colourCalibration);
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE)
 			;
