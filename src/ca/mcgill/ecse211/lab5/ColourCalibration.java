@@ -20,6 +20,8 @@ public class ColourCalibration extends Thread {
 	private static final double[] std_white = { 0.0953342, 0.089224356, 0.05930942 };
 	private colour currentBlock;
 	private colour flag;
+	
+	// Used to know whether the calibration is used for part 1 or 2 of the demo
 	public boolean isFieldSearching = false;
 
 	/*
