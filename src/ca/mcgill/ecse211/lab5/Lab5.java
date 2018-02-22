@@ -17,15 +17,21 @@ public class Lab5 {
 	private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 	private static final TextLCD lcd = LocalEV3.get().getTextLCD();
 	private static final Port usPort = LocalEV3.get().getPort("S3");
+	private static Navigation navigation;
 
 	// Set vehicle constants
 	public static final double WHEEL_RAD = 2.1;
 	public static final double TRACK = 15.79;
 	private static int startingCorner = 0;
+	
+	// Constants for part 2
+	private static double lowerLeftX, lowerLeftY;
+	private static double upperRightX, upperRightY;
+	private static int targetBlock;
 
 	public static void main(String[] args) throws OdometerExceptions {
 
-		int buttonChoice;
+		int buttonChoice = 0;
 
 		// Odometer related objects
 		Odometer odometer = Odometer.getOdometer(leftMotor, rightMotor, TRACK, WHEEL_RAD);
@@ -36,63 +42,60 @@ public class Lab5 {
 		SensorModes ultrasonicSensor = new EV3UltrasonicSensor(usPort);
 		// usDistance provides samples from this instance
 		SampleProvider usDistance = ultrasonicSensor.getMode("Distance");
+		
+		navigation = new Navigation(odometer, leftMotor, rightMotor);
 
 		do {
 			// clear the display
 			lcd.clear();
 
-			// ask the user whether the motors should drive in a square or float
-			lcd.drawString("<      | 	   >", 0, 0);
-			lcd.drawString("       |        ", 0, 1);
-			lcd.drawString(" Colour|Field   ", 0, 2);
-			lcd.drawString(" Sensor|Class   ", 0, 3);
-			lcd.drawString("       |        ", 0, 4);
+			//
+			lcd.drawString("Press any button to start ", 0, 0);
+			lcd.drawString("color classification ", 1, 0);
 
 			buttonChoice = Button.waitForAnyPress(); // Record choice (left or right press)
-		} while (buttonChoice != Button.ID_LEFT && buttonChoice != Button.ID_RIGHT);
+		} while (buttonChoice == 0);
 
-		if (buttonChoice == Button.ID_LEFT) {
-			lcd.clear();
+		lcd.clear();
 
-			// gotta fix the colour callibration to work independently for the colour test
+		// TODO: gotta fix the colour calibration to work independently for the colour
+		// test
 
-			ColourCallibration colourCallibration = new ColourCallibration();
+		ColourCalibration colourCalibration = new ColourCalibration();
 
-			Thread colourCallibrationThread = new Thread(colourCallibration);
-			colourCallibration.start();
-
-		} else {
-
-			// Start odometer and display threads and correction Threads.
-			Thread odoThread = new Thread(odometer);
-			odoThread.start();
-
-			Thread odoDisplayThread = new Thread(odometryDisplay);
-			odoDisplayThread.start();
-
-			// Create ultrasonic and light localizer objects.
-			USLocalizer USLocalizer = new USLocalizer(odometer, leftMotor, rightMotor, usDistance, startingCorner);
-			LightLocalizer lightLocatizer = new LightLocalizer(odometer, leftMotor, rightMotor);
-
-			// perform the ultrasonic localization
-			USLocalizer.localize();
-
-			// perform the light sensor localization
-			lightLocatizer.localize();
-
-			/*
-			 * @To Do
-			 * 
-			 * Use Navigation to navigate to the lower lefthand corner
-			 * 
-			 * Enter designated since we know LL and Upper Right Search for cube in
-			 * designated area (Possible methods snaking the area?) - When you see a block
-			 * stop and check its color using Color Calibration - If its not the color use
-			 * the avoidance go around it and carry on with the search
-			 * 
-			 * 
-			 */
+		Thread colourCalibrationThread = new Thread(colourCalibration);
+		colourCalibration.start();
+		
+		buttonChoice = 0;
+		while (buttonChoice == 0) {
+			buttonChoice = Button.waitForAnyPress();
 		}
+
+		// Start odometer and display threads and correction Threads.
+		Thread odoThread = new Thread(odometer);
+		odoThread.start();
+
+		Thread odoDisplayThread = new Thread(odometryDisplay);
+		odoDisplayThread.start();
+
+		// Create ultrasonic and light localizer objects.
+		USLocalizer USLocalizer = new USLocalizer(odometer, leftMotor, rightMotor, usDistance, startingCorner, navigation);
+		LightLocalizer lightLocatizer = new LightLocalizer(odometer, leftMotor, rightMotor, navigation);
+		
+		// perform the ultrasonic localization
+		USLocalizer.localize();
+
+		// perform the light sensor localization
+		lightLocatizer.localize();
+		
+		lowerLeftX = 0 * USLocalizer.getTileSize();
+		lowerLeftY = 0 * USLocalizer.getTileSize();
+		upperRightX = 0 * USLocalizer.getTileSize();
+		upperRightY = 0 * USLocalizer.getTileSize();
+		targetBlock = 1;
+
+		SearchAndLocalize searcher = new SearchAndLocalize(lowerLeftX, lowerLeftY, upperRightX, upperRightY, targetBlock, navigation, colourCalibration);
+
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE)
 			;
 		System.exit(0);

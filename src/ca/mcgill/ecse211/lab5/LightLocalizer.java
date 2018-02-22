@@ -15,7 +15,7 @@ public class LightLocalizer {
 	private Odometer odometer;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
 	public Navigation navigation;
-	// Instantiat the EV3 Color Sensor
+	// Instantiate the EV3 Color Sensor
 	private static final EV3ColorSensor lightSensor = new EV3ColorSensor(LocalEV3.get().getPort("S1"));
 	private float sample;
 	private float prevSample;
@@ -25,7 +25,7 @@ public class LightLocalizer {
 
 	double[] lineData;
 
-	public LightLocalizer(Odometer odometer, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor) {
+	public LightLocalizer(Odometer odometer, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Navigation nav) {
 
 		this.odometer = odometer;
 		this.leftMotor = leftMotor;
@@ -34,7 +34,7 @@ public class LightLocalizer {
 
 		idColour = lightSensor.getRedMode(); // set the sensor light to red
 		lineData = new double[4];
-		navigation = new Navigation(odometer, leftMotor, rightMotor);
+		this.navigation = nav;
 	}
 
 	/**
@@ -48,7 +48,7 @@ public class LightLocalizer {
 		rightMotor.setSpeed(ROTATION_SPEED);
 
 		// ensure that we are close to origin before rotating
-		moveToOrigin();
+		moveToOneOne();
 
 		// Scan all four lines and record our angle
 		while (index < 4) {
@@ -80,9 +80,9 @@ public class LightLocalizer {
 		deltax = -1 * SENSOR_LENGTH * Math.cos(Math.toRadians(thetay / 2));
 		deltay = -1 * SENSOR_LENGTH * Math.cos(Math.toRadians(thetax / 2));
 
-		// travel to origin to correct position
+		// travel to one-one to correct position
 		odometer.setXYT(deltax, deltay, odometer.getXYT()[2] + 6);
-		navigation.travelTo(0.0, 0.0);
+		navigation.travelTo(USLocalizer.getTileSize(), USLocalizer.getTileSize());
 
 		leftMotor.setSpeed(ROTATION_SPEED / 2);
 		rightMotor.setSpeed(ROTATION_SPEED / 2);
@@ -100,9 +100,9 @@ public class LightLocalizer {
 	}
 
 	/**
-	 * This method moves the robot towards the origin
+	 * This method moves the robot towards the point (1,1) of the grid (unit coordinates)
 	 */
-	public void moveToOrigin() {
+	public void moveToOneOne() {
 
 		navigation.turnTo(Math.PI / 4);
 

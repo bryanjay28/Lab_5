@@ -21,7 +21,7 @@ public class USLocalizer {
 
 	private double d = 40.0;
 	private double k = 2;
-	private double TILESIZE = 30.48;
+	private static double TILESIZE = 30.48;
 
 	/**
 	 * Constructor to initialize variables
@@ -33,14 +33,21 @@ public class USLocalizer {
 	 * @param SampleProvider
 	 */
 	public USLocalizer(Odometer odo, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
-			SampleProvider usDistance, int corner) {
+			SampleProvider usDistance, int corner, Navigation nav) {
 		this.odometer = odo;
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
 		this.usDistance = usDistance;
 		this.usData = new float[usDistance.sampleSize()];
-		navigation = new Navigation(odometer, leftMotor, rightMotor);
+		navigation = nav;
 		
+		setStartingCoordinates(corner);
+
+		leftMotor.setSpeed(ROTATION_SPEED);
+		rightMotor.setSpeed(ROTATION_SPEED);
+	}
+	
+	public void setStartingCoordinates(int corner) {
 		switch(corner) {
 		case 0:
 			this.startingCoordinates[0] = 0.0;
@@ -59,9 +66,6 @@ public class USLocalizer {
 			this.startingCoordinates[1] = 6*TILESIZE;
 			break;
 		}
-
-		leftMotor.setSpeed(ROTATION_SPEED);
-		rightMotor.setSpeed(ROTATION_SPEED);
 	}
 
 	/**
@@ -225,6 +229,10 @@ public class USLocalizer {
 	 */
 	private static int convertAngle(double radius, double width, double angle) {
 		return convertDistance(radius, Math.PI * width * angle / 360.0);
+	}
+	
+	public static double getTileSize() {
+		return TILESIZE;
 	}
 
 }

@@ -48,7 +48,6 @@ public class Navigation extends Thread {
 		// Calculate the angle to turn around
 		currTheta = (odometer.getXYT()[2]) * Math.PI / 180;
 		double mTheta = Math.atan2(deltax, deltay) - currTheta;
-
 		double hypot = Math.hypot(deltax, deltay);
 
 		// Turn to the correct angle towards the endpoint
