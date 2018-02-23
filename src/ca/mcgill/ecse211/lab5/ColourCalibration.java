@@ -20,7 +20,7 @@ public class ColourCalibration extends Thread {
 	private static final double[] std_white = { 0.0953342, 0.089224356, 0.05930942 };
 	private colour currentBlock;
 	private colour flag;
-	
+
 	// Used to know whether the calibration is used for part 1 or 2 of the demo
 	public boolean isFieldSearching = false;
 
@@ -36,8 +36,16 @@ public class ColourCalibration extends Thread {
 	}
 
 	public void run() {
-		while (true) {
-			colourDetection();
+		if (!isFieldSearching) {
+			// first part of the demo, continuously search for a color
+			while (true) {
+				colourDetection();
+			}
+		} else {
+			// second part of the demo, colourDetection() is called
+			// at will by SearchAndLocalize
+			while (true)
+				;
 		}
 	}
 
@@ -56,9 +64,10 @@ public class ColourCalibration extends Thread {
 			blockColour = "Yellow";
 		} else if (currentBlock.equals(colour.WHITE)) {
 			blockColour = "White";
-		} //else blockColour remains ""
+		} // else blockColour remains ""
 
 		if (blockColour != "") {
+			// If the value of blockColour has changed
 			LCD.drawString("Block Colour =" + blockColour, 0, 5);
 		} else {
 			LCD.clear();

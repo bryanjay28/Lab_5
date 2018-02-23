@@ -25,7 +25,8 @@ public class LightLocalizer {
 
 	double[] lineData;
 
-	public LightLocalizer(Odometer odometer, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Navigation nav) {
+	public LightLocalizer(Odometer odometer, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
+			Navigation nav) {
 
 		this.odometer = odometer;
 		this.leftMotor = leftMotor;
@@ -64,7 +65,7 @@ public class LightLocalizer {
 				Sound.beepSequenceUp();
 				index++;
 			}
-			
+
 			prevSample = sample;
 		}
 
@@ -77,12 +78,14 @@ public class LightLocalizer {
 		thetay = lineData[3] - lineData[1];
 		thetax = lineData[2] - lineData[0];
 
+		// TODO: do those values of deltax and deltay take into account the
+		// new coordinate system where (0, 0) is the corner of the board?
 		deltax = -1 * SENSOR_LENGTH * Math.cos(Math.toRadians(thetay / 2));
 		deltay = -1 * SENSOR_LENGTH * Math.cos(Math.toRadians(thetax / 2));
 
 		// travel to one-one to correct position
 		odometer.setXYT(deltax, deltay, odometer.getXYT()[2] + 6);
-		navigation.travelTo(USLocalizer.getTileSize(), USLocalizer.getTileSize());
+		navigation.travelTo(USLocalizer.TILESIZE, USLocalizer.TILESIZE, false, null);
 
 		leftMotor.setSpeed(ROTATION_SPEED / 2);
 		rightMotor.setSpeed(ROTATION_SPEED / 2);
@@ -100,7 +103,8 @@ public class LightLocalizer {
 	}
 
 	/**
-	 * This method moves the robot towards the point (1,1) of the grid (unit coordinates)
+	 * This method moves the robot towards the point (1,1) of the grid (unit
+	 * coordinates)
 	 */
 	public void moveToOneOne() {
 
@@ -111,17 +115,17 @@ public class LightLocalizer {
 
 		// get sample
 		sample = fetchSample();
-		
+
 		// move forward past the origin until light sensor sees the line
 		while (Math.abs(deltaSample) > 0.15) {
 			sample = fetchSample();
 			deltaSample = sample - prevSample;
 			prevSample = sample;
-			
+
 			leftMotor.forward();
 			rightMotor.forward();
 		}
-		
+
 		leftMotor.stop(true);
 		rightMotor.stop();
 		Sound.beep();

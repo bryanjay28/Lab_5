@@ -37,7 +37,13 @@ public class Navigation extends Thread {
 	 * @param y
 	 *            Y-Coordinate
 	 */
-	public void travelTo(double x, double y) {
+	public void travelTo(double x, double y, boolean lookForBlocks, SearchAndLocalize search) {
+
+		/*
+		 * The search instance of SearchAndLocalize is only necessary when lookForBlocks
+		 * is true. Therefore, in calls where lookForBlocks is false, we pass null to
+		 * search
+		 */
 
 		currx = odometer.getXYT()[0];
 		curry = odometer.getXYT()[1];
@@ -56,12 +62,24 @@ public class Navigation extends Thread {
 		leftMotor.setSpeed(FORWARD_SPEED);
 		rightMotor.setSpeed(FORWARD_SPEED);
 
-		leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
-		rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
-
+		if (!lookForBlocks) {
+			leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
+			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
+		} else {
+			// TODO: Find a way to go forward while checking for blocks
+			if (foundCorrectBlock()) {
+				// foundCorrectBlock is a dummy method for compilation
+				search.setFoundBlock(true);
+			}
+		}
 		// stop vehicle
 		leftMotor.stop(true);
 		rightMotor.stop(true);
+
+	}
+
+	private static boolean foundCorrectBlock() {
+		return false;
 	}
 
 	/**
@@ -129,5 +147,9 @@ public class Navigation extends Thread {
 	 */
 	private static int convertAngle(double radius, double width, double angle) {
 		return convertDistance(radius, Math.PI * width * angle / 360.0);
+	}
+
+	public static double calculateDistance(double x1, double y1, double x2, double y2) {
+		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 	}
 }

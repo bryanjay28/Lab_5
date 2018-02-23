@@ -5,7 +5,6 @@ import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.Port;
-import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
@@ -60,18 +59,17 @@ public class Lab5 {
 
 		lcd.clear();
 
-		// TODO: gotta fix the colour calibration to work independently for the colour
-		// test
-
 		ColourCalibration colourCalibration = new ColourCalibration();
 
 		Thread colourCalibrationThread = new Thread(colourCalibration);
-		colourCalibration.start();
+		colourCalibrationThread.start();
 
 		buttonChoice = 0;
 		while (buttonChoice == 0) {
 			buttonChoice = Button.waitForAnyPress();
 		}
+
+		colourCalibrationThread.interrupt();
 
 		// Start odometer and display threads and correction Threads.
 		Thread odoThread = new Thread(odometer);
@@ -91,17 +89,25 @@ public class Lab5 {
 		// perform the light sensor localization
 		lightLocatizer.localize();
 
-		
 		// Modified just before executing and loading the code on the machine
 		// Replace the 0 by the number of tiles representing the position
-		lowerLeftX = 0 * USLocalizer.getTileSize();
-		lowerLeftY = 0 * USLocalizer.getTileSize();
-		upperRightX = 0 * USLocalizer.getTileSize();
-		upperRightY = 0 * USLocalizer.getTileSize();
+		lowerLeftX = 0 * USLocalizer.TILESIZE;
+		lowerLeftY = 0 * USLocalizer.TILESIZE;
+		upperRightX = 0 * USLocalizer.TILESIZE;
+		upperRightY = 0 * USLocalizer.TILESIZE;
 		targetBlock = 1;
+
+		// Recreating the thread because its behaviour will be different
+		// It will check for colours upon request instead of continually
+		colourCalibrationThread = new Thread(colourCalibration);
+		colourCalibration.isFieldSearching = true;
+
+		colourCalibrationThread.start();
 
 		SearchAndLocalize searcher = new SearchAndLocalize(lowerLeftX, lowerLeftY, upperRightX, upperRightY,
 				targetBlock, navigation, colourCalibration);
+		
+		searcher.fieldTest();
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE)
 			;
