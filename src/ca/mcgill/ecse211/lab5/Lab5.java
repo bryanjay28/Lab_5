@@ -14,7 +14,7 @@ public class Lab5 {
 	// Motor Objects, and Robot related parameters
 	private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
 	private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
-	private static final TextLCD lcd = LocalEV3.get().getTextLCD();
+	public static final TextLCD lcd = LocalEV3.get().getTextLCD();
 	private static final Port usPort = LocalEV3.get().getPort("S3");
 
 	// Single navigation instance used by all classes
@@ -26,13 +26,43 @@ public class Lab5 {
 	private static int startingCorner = 0;
 
 	// Constants for part 2
-	private static double lowerLeftX, lowerLeftY;
-	private static double upperRightX, upperRightY;
-	private static int targetBlock;
+	private static double lowerLeftX = 0 * USLocalizer.TILESIZE;
+	private static double lowerLeftY = 0 * USLocalizer.TILESIZE;
+	private static double upperRightX = 0 * USLocalizer.TILESIZE;
+	private static double upperRightY = 0 * USLocalizer.TILESIZE;
+	private static int targetBlock = 0;
+	
 
-	public static void main(String[] args) throws OdometerExceptions {
+	public static void main(String[] args) throws OdometerExceptions, InterruptedException {
 
 		int buttonChoice = 0;
+
+		do {
+			// clear the display
+			lcd.clear();
+
+			//
+			lcd.drawString("Press any button", 0, 0);
+			lcd.drawString("to start color", 0, 1);
+			lcd.drawString("classification", 0, 2);
+
+			buttonChoice = Button.waitForAnyPress(); // Record choice (left or right press)
+		} while (buttonChoice == 0);
+
+		lcd.clear();
+
+		ColourCalibration colourCalibration = new ColourCalibration();
+		Thread colourCalibrationThread = new Thread(colourCalibration);
+		colourCalibrationThread.start();
+		
+		// Keep the colour detection running until a button is pressed to start part2
+		buttonChoice = 0;
+		while (buttonChoice == 0) {
+			buttonChoice = Button.waitForAnyPress();
+		}
+
+		colourCalibrationThread.interrupt();
+		
 
 		// Odometer related objects
 		Odometer odometer = Odometer.getOdometer(leftMotor, rightMotor, TRACK, WHEEL_RAD);
@@ -46,31 +76,6 @@ public class Lab5 {
 
 		navigation = new Navigation(odometer, leftMotor, rightMotor);
 
-		do {
-			// clear the display
-			lcd.clear();
-
-			//
-			lcd.drawString("Press any button to start ", 0, 0);
-			lcd.drawString("color classification ", 1, 0);
-
-			buttonChoice = Button.waitForAnyPress(); // Record choice (left or right press)
-		} while (buttonChoice == 0);
-
-		lcd.clear();
-
-		ColourCalibration colourCalibration = new ColourCalibration();
-
-		Thread colourCalibrationThread = new Thread(colourCalibration);
-		colourCalibrationThread.start();
-
-		buttonChoice = 0;
-		while (buttonChoice == 0) {
-			buttonChoice = Button.waitForAnyPress();
-		}
-
-		colourCalibrationThread.interrupt();
-
 		// Start odometer and display threads and correction Threads.
 		Thread odoThread = new Thread(odometer);
 		odoThread.start();
@@ -81,6 +86,7 @@ public class Lab5 {
 		// Create ultrasonic and light localizer objects.
 		USLocalizer USLocalizer = new USLocalizer(odometer, leftMotor, rightMotor, usDistance, startingCorner,
 				navigation);
+		navigation.usLoc = USLocalizer;
 		LightLocalizer lightLocatizer = new LightLocalizer(odometer, leftMotor, rightMotor, navigation);
 
 		// perform the ultrasonic localization
@@ -92,10 +98,10 @@ public class Lab5 {
 		// Modified just before executing and loading the code on the machine
 		// Replace the 0 by the number of tiles representing the position
 		lowerLeftX = 0 * USLocalizer.TILESIZE;
-		lowerLeftY = 0 * USLocalizer.TILESIZE;
-		upperRightX = 0 * USLocalizer.TILESIZE;
+		lowerLeftY = 0* USLocalizer.TILESIZE;
+		upperRightX = 0* USLocalizer.TILESIZE;
 		upperRightY = 0 * USLocalizer.TILESIZE;
-		targetBlock = 1;
+		targetBlock = 0;
 
 		// Recreating the thread because its behaviour will be different
 		// It will check for colours upon request instead of continually
@@ -107,6 +113,8 @@ public class Lab5 {
 		SearchAndLocalize searcher = new SearchAndLocalize(lowerLeftX, lowerLeftY, upperRightX, upperRightY,
 				targetBlock, navigation, colourCalibration);
 		
+		colourCalibration.setFlag(targetBlock);
+
 		searcher.fieldTest();
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE)

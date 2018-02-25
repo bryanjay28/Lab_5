@@ -14,7 +14,7 @@ public class USLocalizer {
 	private float[] usData;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private SampleProvider usDistance;
-	private double[] startingCoordinates;
+	private double[] startingCoordinates = new double[2];
 
 	// Create a navigation
 	public Navigation navigation;
@@ -38,7 +38,7 @@ public class USLocalizer {
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
 		this.usDistance = usDistance;
-		this.usData = new float[usDistance.sampleSize()];
+		this.usData = new float[this.usDistance.sampleSize()];
 		navigation = nav;
 
 		setStartingCoordinates(corner);
@@ -99,6 +99,8 @@ public class USLocalizer {
 			leftMotor.backward();
 			rightMotor.forward();
 		}
+		leftMotor.stop(true);
+		rightMotor.stop(true);
 		Sound.buzz();
 		// record angle
 		angleA = odometer.getXYT()[2];
@@ -114,11 +116,12 @@ public class USLocalizer {
 			leftMotor.forward();
 			rightMotor.backward();
 		}
+		leftMotor.stop(true);
+		rightMotor.stop(true);
 		Sound.buzz();
 		angleB = odometer.getXYT()[2];
 
-		leftMotor.stop(true);
-		rightMotor.stop();
+		
 
 		// calculate angle of rotation
 		if (angleA < angleB) {
@@ -201,7 +204,7 @@ public class USLocalizer {
 	 * 
 	 * @return
 	 */
-	private int fetchUS() {
+	public int fetchUS() {
 		usDistance.fetchSample(usData, 0);
 		return (int) (usData[0] * 100);
 	}

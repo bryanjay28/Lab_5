@@ -8,12 +8,12 @@ public class Navigation extends Thread {
 	private EV3LargeRegulatedMotor leftMotor;
 	private EV3LargeRegulatedMotor rightMotor;
 
-	private double deltax;
-	private double deltay;
+	private double deltaX;
+	private double deltaY;
 
 	// current location of the vehicle
-	private double currx;
-	private double curry;
+	private double currX;
+	private double currY;
 	private double currTheta;
 
 	// set constants
@@ -21,6 +21,8 @@ public class Navigation extends Thread {
 	private static final int ROTATE_SPEED = 60;
 
 	private boolean navigate = true;
+	
+	public USLocalizer usLoc;	
 
 	// constructor for navigation
 	public Navigation(Odometer odo, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor) {
@@ -40,21 +42,21 @@ public class Navigation extends Thread {
 	public void travelTo(double x, double y, boolean lookForBlocks, SearchAndLocalize search) {
 
 		/*
-		 * The search instance of SearchAndLocalize is only necessary when lookForBlocks
-		 * is true. Therefore, in calls where lookForBlocks is false, we pass null to
-		 * search
+		 * The search instance of SearchAndLocalize in the parameters is only necessary
+		 * when lookForBlocks is true. Therefore, in calls where lookForBlocks is false,
+		 * we pass null to the search variable.
 		 */
 
-		currx = odometer.getXYT()[0];
-		curry = odometer.getXYT()[1];
+		currX = odometer.getXYT()[0];
+		currY = odometer.getXYT()[1];
 
-		deltax = x - currx;
-		deltay = y - curry;
+		deltaX = x - currX;
+		deltaY = y - currY;
 
 		// Calculate the angle to turn around
 		currTheta = (odometer.getXYT()[2]) * Math.PI / 180;
-		double mTheta = Math.atan2(deltax, deltay) - currTheta;
-		double hypot = Math.hypot(deltax, deltay);
+		double mTheta = Math.atan2(deltaX, deltaY) - currTheta;
+		double hypot = Math.hypot(deltaX, deltaY);
 
 		// Turn to the correct angle towards the endpoint
 		turnTo(mTheta);
@@ -63,23 +65,73 @@ public class Navigation extends Thread {
 		rightMotor.setSpeed(FORWARD_SPEED);
 
 		if (!lookForBlocks) {
+			// We are going to our destination without bothering to check for blocks
 			leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
 			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
 		} else {
-			// TODO: Find a way to go forward while checking for blocks
-			if (foundCorrectBlock()) {
-				// foundCorrectBlock is a dummy method for compilation
-				search.setFoundBlock(true);
+			leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
+			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
+			while (true) {
+				// if a block is detected (regardless of whether it's the right one)
+				if (blockDetected()) {
+					leftMotor.stop(true);
+					rightMotor.stop(true);
+					ColourCalibration cc = search.getCC();
+					// assess the colour of the block
+					cc.colourDetection();
+					if (cc.isBlock()) {
+						// if it's the right block, save that fact and return
+						search.setFoundBlock(true);
+						return;
+					} else {
+						// otherwise, reset the value of currentBlock to null
+						cc.resetBlock();
+						// avoid the obstacle
+						goAround();
+						// and start travelling back to where we were going
+						travelTo(x, y, lookForBlocks, search);
+						return;
+					}
+				}
 			}
 		}
 		// stop vehicle
 		leftMotor.stop(true);
-		rightMotor.stop(true);
-
+		rightMotor.stop(false);
+	}
+	
+	private void goAround() {
+		
+		/*
+		 * TODO: Add code here so that if the robot is on the left edge of the grid,
+		 * it turns 90 degrees clockwise instead of anti-clockwise 
+		 * to avoid falling from the grid floor.
+		 */
+		
+		double currentHeading = odometer.getXYT()[2] * Math.PI / 180;
+		double firstTurn = currentHeading - (Math.PI / 2);
+		int firstDist = 15; // distance to travel after the first turn
+		int secondDist = 20; // distance to travel after the second turn
+		
+		// turn 90 degrees anti-clockwise to circle around the block and go forward 15 cm
+		turnTo(firstTurn);
+		moveDistance(firstDist);
+		
+		// turn back to our original heading and go forward 20 cm
+		turnTo(currentHeading);
+		moveDistance(secondDist);
+	}
+	
+	private void moveDistance(int dist) {
+		leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, dist), true);
+		rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, dist), false);
+		leftMotor.stop(true);
+		rightMotor.stop(false);
 	}
 
-	private static boolean foundCorrectBlock() {
-		return false;
+	private boolean blockDetected() {
+		int distance = this.usLoc.fetchUS();
+		return distance < 5;
 	}
 
 	/**
@@ -112,6 +164,8 @@ public class Navigation extends Thread {
 			leftMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, (theta * 180) / Math.PI), true);
 			rightMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, (theta * 180) / Math.PI), false);
 		}
+		leftMotor.stop(true);
+		rightMotor.stop(false);
 	}
 
 	/**

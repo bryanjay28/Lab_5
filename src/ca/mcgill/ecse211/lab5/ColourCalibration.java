@@ -55,22 +55,23 @@ public class ColourCalibration extends Thread {
 	 */
 	private void updateDisplay() {
 		String blockColour = "";
+		if (currentBlock != null) {
+			if (currentBlock.equals(colour.RED)) {
+				blockColour = "Red";
+			} else if (currentBlock.equals(colour.BLUE)) {
+				blockColour = "Blue";
+			} else if (currentBlock.equals(colour.YELLOW)) {
+				blockColour = "Yellow";
+			} else if (currentBlock.equals(colour.WHITE)) {
+				blockColour = "White";
+			} // else blockColour remains ""
 
-		if (currentBlock.equals(colour.RED)) {
-			blockColour = "Red";
-		} else if (currentBlock.equals(colour.BLUE)) {
-			blockColour = "Blue";
-		} else if (currentBlock.equals(colour.YELLOW)) {
-			blockColour = "Yellow";
-		} else if (currentBlock.equals(colour.WHITE)) {
-			blockColour = "White";
-		} // else blockColour remains ""
-
-		if (blockColour != "") {
-			// If the value of blockColour has changed
-			LCD.drawString("Block Colour =" + blockColour, 0, 5);
+			if (blockColour != "") {
+				// If the value of blockColour has changed
+				Lab5.lcd.drawString("Block Colour =" + blockColour, 0, 5);
+			}
 		} else {
-			LCD.clear();
+			Lab5.lcd.clear();
 		}
 
 	}
@@ -80,10 +81,10 @@ public class ColourCalibration extends Thread {
 	 * 
 	 * @return boolean
 	 */
-	private boolean isBlock() {
+	public boolean isBlock() {
 
 		if (flag.equals(currentBlock)) {
-			Sound.beep();
+			// Sound.beep();
 			return true;
 		} else {
 			return false;
@@ -94,7 +95,7 @@ public class ColourCalibration extends Thread {
 	 * Determines the colour of the block
 	 * 
 	 */
-	private void colourDetection() {
+	public void colourDetection() {
 
 		float[] RGB = new float[3];
 		RGB = getRGB();
@@ -118,8 +119,9 @@ public class ColourCalibration extends Thread {
 				&& Math.abs(RGB[2] - RGB_white[2]) <= 2 * std_white[2]) {
 			currentBlock = colour.WHITE;
 		}
-
-		updateDisplay();
+		if (!isFieldSearching) {
+			updateDisplay();
+		}
 	}
 
 	/**
@@ -132,8 +134,19 @@ public class ColourCalibration extends Thread {
 		SampleProvider colorSensor = lightSensor.getRGBMode();
 		float[] RGB = new float[colorSensor.sampleSize()];
 		colorSensor.fetchSample(RGB, 0);
-
 		return RGB;
+	}
+
+	public colour getCurrentBlock() {
+		return currentBlock;
+	}
+
+	public void resetBlock() {
+		currentBlock = null;
+	}
+
+	public void setFlag(int f) {
+		this.flag = colour.values()[f];
 	}
 
 }
