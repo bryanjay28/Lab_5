@@ -49,7 +49,7 @@ public class LightLocalizer {
 		rightMotor.setSpeed(ROTATION_SPEED);
 
 		// ensure that we are at the (1, 1) point (in unit coordinates)
-		moveToOneOne();
+		this.navigation.travelTo(USLocalizer.TILESIZE, USLocalizer.TILESIZE, false, null);
 
 		// Scan all four lines and record our angle
 		while (index < 4) {
@@ -70,7 +70,7 @@ public class LightLocalizer {
 		}
 
 		leftMotor.stop(true);
-		rightMotor.stop();
+		rightMotor.stop(false);
 
 		double deltax, deltay, thetax, thetay;
 
@@ -99,40 +99,6 @@ public class LightLocalizer {
 
 		leftMotor.stop(true);
 		rightMotor.stop();
-
-	}
-
-	/**
-	 * This method moves the robot towards the point (1,1) of the grid (unit
-	 * coordinates)
-	 */
-	public void moveToOneOne() {
-
-		navigation.turnTo(Math.PI / 4);
-
-		leftMotor.setSpeed(ROTATION_SPEED);
-		rightMotor.setSpeed(ROTATION_SPEED);
-
-		// get sample
-		sample = fetchSample();
-
-		// move forward past the origin until light sensor sees the line
-		while (Math.abs(deltaSample) > 0.15) {
-			sample = fetchSample();
-			deltaSample = sample - prevSample;
-			prevSample = sample;
-
-			leftMotor.forward();
-			rightMotor.forward();
-		}
-
-		leftMotor.stop(true);
-		rightMotor.stop();
-		Sound.beep();
-
-		// Move backwards so our origin is close to origin
-		leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, -12), true);
-		rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, -12), false);
 
 	}
 
