@@ -68,7 +68,8 @@ public class ColourCalibration extends Thread {
 
 			if (blockColour != "") {
 				// If the value of blockColour has changed
-				Lab5.lcd.drawString("Block Colour =" + blockColour, 0, 5);
+				Lab5.lcd.drawString("Block Colour =", 0, 0);
+				Lab5.lcd.drawString(blockColour, 0, 1);
 			}
 		} else {
 			Lab5.lcd.clear();

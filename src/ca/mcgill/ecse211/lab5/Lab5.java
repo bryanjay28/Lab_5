@@ -22,7 +22,7 @@ public class Lab5 {
 
 	// Set vehicle constants
 	public static final double WHEEL_RAD = 2.1;
-	public static final double TRACK = 15.79;
+	public static final double TRACK = 11.25;
 	private static int startingCorner = 0;
 
 	// Constants for part 2
@@ -94,28 +94,28 @@ public class Lab5 {
 
 		// perform the light sensor localization
 		lightLocatizer.localize();
-
-		// Modified just before executing and loading the code on the machine
-		// Replace the 0 by the number of tiles representing the position
-		lowerLeftX = 0 * USLocalizer.TILESIZE;
-		lowerLeftY = 0* USLocalizer.TILESIZE;
-		upperRightX = 0* USLocalizer.TILESIZE;
-		upperRightY = 0 * USLocalizer.TILESIZE;
-		targetBlock = 0;
-
-		// Recreating the thread because its behaviour will be different
-		// It will check for colours upon request instead of continually
-		colourCalibrationThread = new Thread(colourCalibration);
-		colourCalibration.isFieldSearching = true;
-
-		colourCalibrationThread.start();
-
-		SearchAndLocalize searcher = new SearchAndLocalize(lowerLeftX, lowerLeftY, upperRightX, upperRightY,
-				targetBlock, navigation, colourCalibration);
-		
-		colourCalibration.setFlag(targetBlock);
-
-		searcher.fieldTest();
+//
+//		// Modified just before executing and loading the code on the machine
+//		// Replace the 0 by the number of tiles representing the position
+//		lowerLeftX = 0 * USLocalizer.TILESIZE;
+//		lowerLeftY = 0* USLocalizer.TILESIZE;
+//		upperRightX = 0* USLocalizer.TILESIZE;
+//		upperRightY = 0 * USLocalizer.TILESIZE;
+//		targetBlock = 0;
+//
+//		// Recreating the thread because its behaviour will be different
+//		// It will check for colours upon request instead of continually
+//		colourCalibrationThread = new Thread(colourCalibration);
+//		colourCalibration.isFieldSearching = true;
+//
+//		colourCalibrationThread.start();
+//
+//		SearchAndLocalize searcher = new SearchAndLocalize(lowerLeftX, lowerLeftY, upperRightX, upperRightY,
+//				targetBlock, navigation, colourCalibration);
+//		
+//		colourCalibration.setFlag(targetBlock);
+//
+//		searcher.fieldTest();
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE)
 			;

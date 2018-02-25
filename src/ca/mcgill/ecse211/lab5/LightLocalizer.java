@@ -10,7 +10,7 @@ public class LightLocalizer {
 
 	// vehicle constants
 	public static int ROTATION_SPEED = 100;
-	private double SENSOR_LENGTH = 11.8;
+	private double SENSOR_LENGTH = 12.65;
 
 	private Odometer odometer;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
@@ -48,9 +48,9 @@ public class LightLocalizer {
 		leftMotor.setSpeed(ROTATION_SPEED);
 		rightMotor.setSpeed(ROTATION_SPEED);
 
-		// ensure that we are at the (1, 1) point (in unit coordinates)
-		this.navigation.travelTo(USLocalizer.TILESIZE, USLocalizer.TILESIZE, false, null);
-
+		// ensure that we are close to origin before rotating
+		moveToOrigin();
+		
 		// Scan all four lines and record our angle
 		while (index < 4) {
 
@@ -58,15 +58,13 @@ public class LightLocalizer {
 			rightMotor.backward();
 
 			sample = fetchSample();
-			deltaSample = sample - prevSample;
-			if (deltaSample < 0.15) {
+
+			if (sample < 0.38) {
 
 				lineData[index] = odometer.getXYT()[2];
 				Sound.beepSequenceUp();
 				index++;
 			}
-
-			prevSample = sample;
 		}
 
 		leftMotor.stop(true);
@@ -85,7 +83,7 @@ public class LightLocalizer {
 
 		// travel to one-one to correct position
 		odometer.setXYT(deltax, deltay, odometer.getXYT()[2] + 6);
-		navigation.travelTo(USLocalizer.TILESIZE, USLocalizer.TILESIZE, false, null);
+		navigation.travelTo(0, 0, false, null);
 
 		leftMotor.setSpeed(ROTATION_SPEED / 2);
 		rightMotor.setSpeed(ROTATION_SPEED / 2);
@@ -137,4 +135,30 @@ public class LightLocalizer {
 		return colorValue[0];
 	}
 
+	public void moveToOrigin() {
+
+		navigation.turnTo(Math.PI / 4);
+
+		leftMotor.setSpeed(ROTATION_SPEED);
+		rightMotor.setSpeed(ROTATION_SPEED);
+
+		// get sample
+		sample = fetchSample();
+
+		// move forward past the origin until light sensor sees the line
+		while (sample > 0.38) {
+			sample = fetchSample();
+			leftMotor.forward();
+			rightMotor.forward();
+
+		}
+		leftMotor.stop(true);
+		rightMotor.stop();
+		Sound.beep();
+
+		// Move backwards so our origin is close to origin
+		leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, -12), true);
+		rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, -12), false);
+
+	}
 }
