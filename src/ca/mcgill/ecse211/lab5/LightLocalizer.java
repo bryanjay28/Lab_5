@@ -10,7 +10,7 @@ public class LightLocalizer {
 
 	// vehicle constants
 	public static int ROTATION_SPEED = 100;
-	private double SENSOR_LENGTH = 11.85;
+	private double SENSOR_LENGTH = 11.9;
 
 	private Odometer odometer;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
@@ -43,13 +43,13 @@ public class LightLocalizer {
 	 * the right location
 	 */
 	public void localize(double finalX, double finalY, double finalTheta) {
-		odometer.setXYT(0, 0, 0.0);
+
 		int index = 0;
 		leftMotor.setSpeed(ROTATION_SPEED);
 		rightMotor.setSpeed(ROTATION_SPEED);
 
 		// ensure that we are close to origin before rotating
-		moveToOrigin();
+		moveToIntersection();
 		
 		// Scan all four lines and record our angle
 		while (index < 4) {
@@ -83,7 +83,7 @@ public class LightLocalizer {
 
 		// travel to one-one to correct position
 		odometer.setXYT(deltax, deltay, odometer.getXYT()[2] + 6);
-		navigation.travelTo(0.0, 0.0, false, null);
+
 		leftMotor.setSpeed(ROTATION_SPEED / 2);
 		rightMotor.setSpeed(ROTATION_SPEED / 2);
 		this.leftMotor.setAcceleration(navigation.ACCELERATION);
@@ -97,7 +97,7 @@ public class LightLocalizer {
 		}
 
 		leftMotor.stop(true);
-		rightMotor.stop();
+		rightMotor.stop(false);
 		odometer.setXYT(finalX, finalY, finalTheta);
 		lightSensor.close();
 
@@ -138,7 +138,7 @@ public class LightLocalizer {
 		return colorValue[0];
 	}
 
-	public void moveToOrigin() {
+	public void moveToIntersection() {
 
 		navigation.turnTo(Math.PI / 4);
 

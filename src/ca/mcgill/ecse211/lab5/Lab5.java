@@ -26,12 +26,11 @@ public class Lab5 {
 	private static int startingCorner = 0;
 
 	// Constants for part 2
-	private static double lowerLeftX = 0 * USLocalizer.TILESIZE;
-	private static double lowerLeftY = 0 * USLocalizer.TILESIZE;
-	private static double upperRightX = 0 * USLocalizer.TILESIZE;
-	private static double upperRightY = 0 * USLocalizer.TILESIZE;
-	private static int targetBlock = 0;
-
+	private static double lowerLeftX = 3 * USLocalizer.TILESIZE;
+	private static double lowerLeftY = 3 * USLocalizer.TILESIZE;
+	private static double upperRightX = 6 * USLocalizer.TILESIZE;
+	private static double upperRightY = 6 * USLocalizer.TILESIZE;
+	private static int targetBlock = 1;
 
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws OdometerExceptions, InterruptedException {
@@ -62,7 +61,6 @@ public class Lab5 {
 			buttonChoice = Button.waitForAnyPress();
 		}
 		colourCalibrationThread.interrupt();
-			
 
 		// Odometer related objects
 		Odometer odometer = Odometer.getOdometer(leftMotor, rightMotor, TRACK, WHEEL_RAD);
@@ -90,31 +88,23 @@ public class Lab5 {
 
 		// perform the ultrasonic localization
 		USLocalizer.localize();
+		ultrasonicSensor = null;
 		// perform the light sensor localization
-		lightLocatizer.localize(1.0,1.0,0.0);
-		
-		//
-		//		// Modified just before executing and loading the code on the machine
-		//		// Replace the 0 by the number of tiles representing the position
-		//		lowerLeftX = 0 * USLocalizer.TILESIZE;
-		//		lowerLeftY = 0* USLocalizer.TILESIZE;
-		//		upperRightX = 0* USLocalizer.TILESIZE;
-		//		upperRightY = 0 * USLocalizer.TILESIZE;
-		//		targetBlock = 0;
-		//
-		//		// Recreating the thread because its behaviour will be different
-		//		// It will check for colours upon request instead of continually
-		//		colourCalibrationThread = new Thread(colourCalibration);
-		//		colourCalibration.isFieldSearching = true;
-		//
-		//		colourCalibrationThread.start();
-		//
-		//		SearchAndLocalize searcher = new SearchAndLocalize(lowerLeftX, lowerLeftY, upperRightX, upperRightY,
-		//				targetBlock, navigation, colourCalibration);
-		//		
-		//		colourCalibration.setFlag(targetBlock);
-		//
-		//		searcher.fieldTest();
+		lightLocatizer.localize(1.0, 1.0, 0.0);
+
+		// Recreating the thread because its behaviour will be different
+		// It will check for colours upon request instead of continually
+		colourCalibrationThread = new Thread(colourCalibration);
+		colourCalibration.isFieldSearching = true;
+
+		colourCalibrationThread.start();
+
+		SearchAndLocalize searcher = new SearchAndLocalize(lowerLeftX, lowerLeftY, upperRightX, upperRightY,
+				targetBlock, navigation, colourCalibration);
+
+		colourCalibration.setFlag(targetBlock);
+
+		searcher.fieldTest();
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE)
 			;

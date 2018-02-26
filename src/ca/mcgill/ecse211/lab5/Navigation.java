@@ -1,5 +1,6 @@
 package ca.mcgill.ecse211.lab5;
 
+import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 public class Navigation extends Thread {
@@ -19,7 +20,7 @@ public class Navigation extends Thread {
 	// set constants
 	private static final int FORWARD_SPEED = 100;
 	private static final int ROTATE_SPEED = 60;
-	public static final int ACCELERATION = 1500;  
+	public static final int ACCELERATION = 2000;  
 
 	private boolean navigate = true;
 	
@@ -73,30 +74,32 @@ public class Navigation extends Thread {
 			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
 		} else {
 			leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
-			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
-			while (true) {
-				// if a block is detected (regardless of whether it's the right one)
-				if (blockDetected()) {
-					leftMotor.stop(true);
-					rightMotor.stop(true);
-					ColourCalibration cc = search.getCC();
-					// assess the colour of the block
-					cc.colourDetection();
-					if (cc.isBlock()) {
-						// if it's the right block, save that fact and return
-						search.setFoundBlock(true);
-						return;
-					} else {
-						// otherwise, reset the value of currentBlock to null
-						cc.resetBlock();
-						// avoid the obstacle
-						goAround();
-						// and start travelling back to where we were going
-						travelTo(x, y, lookForBlocks, search);
-						return;
-					}
-				}
-			}
+			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
+//			while (true) {
+//				// if a block is detected (regardless of whether it's the right one)
+//				if (blockDetected()) {
+////					leftMotor.stop(true);
+////					rightMotor.stop(true);
+////					ColourCalibration cc = search.getCC();
+////					// assess the colour of the block
+////					cc.colourDetection();
+////					if (cc.isBlock()) {
+////						// if it's the right block, save that fact and return
+////						search.setFoundBlock(true);
+////						return;
+////					} else {
+////						// otherwise, reset the value of currentBlock to null
+////						cc.resetBlock();
+////						// avoid the obstacle
+////						goAround();
+////						// and start travelling back to where we were going
+////						travelTo(x, y, lookForBlocks, search);
+////						return;
+////					}
+//					Sound.beep();
+//					break;
+//				}
+//			}
 		}
 		// stop vehicle
 		leftMotor.stop(true);
