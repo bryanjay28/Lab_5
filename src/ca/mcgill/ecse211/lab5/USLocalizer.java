@@ -196,6 +196,7 @@ public class USLocalizer {
 
 		// set odometer to theta to starting corner
 		odometer.setXYT(startingCoordinates[0], startingCoordinates[1], 0.0);
+		
 
 	}
 

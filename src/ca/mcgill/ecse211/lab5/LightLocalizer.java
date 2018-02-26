@@ -10,7 +10,7 @@ public class LightLocalizer {
 
 	// vehicle constants
 	public static int ROTATION_SPEED = 100;
-	private double SENSOR_LENGTH = 12.65;
+	private double SENSOR_LENGTH = 11.9;
 
 	private Odometer odometer;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
@@ -42,7 +42,7 @@ public class LightLocalizer {
 	 * This method localizes the robot using the light sensor to precisely move to
 	 * the right location
 	 */
-	public void localize() {
+	public void localize(double finalX, double finalY, double finalTheta) {
 
 		int index = 0;
 		leftMotor.setSpeed(ROTATION_SPEED);
@@ -87,6 +87,8 @@ public class LightLocalizer {
 
 		leftMotor.setSpeed(ROTATION_SPEED / 2);
 		rightMotor.setSpeed(ROTATION_SPEED / 2);
+		this.leftMotor.setAcceleration(navigation.ACCELERATION);
+		this.rightMotor.setAcceleration(navigation.ACCELERATION);
 
 		// if we are not facing 0.0 then turn ourselves so that we are
 		if (odometer.getXYT()[2] <= 350 && odometer.getXYT()[2] >= 10.0) {
@@ -97,6 +99,8 @@ public class LightLocalizer {
 
 		leftMotor.stop(true);
 		rightMotor.stop();
+		odometer.setXYT(finalX, finalY, finalTheta);
+		lightSensor.close();
 
 	}
 

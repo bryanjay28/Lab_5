@@ -19,6 +19,7 @@ public class Navigation extends Thread {
 	// set constants
 	private static final int FORWARD_SPEED = 100;
 	private static final int ROTATE_SPEED = 60;
+	public static final int ACCELERATION = 2000;  
 
 	private boolean navigate = true;
 	
@@ -29,6 +30,8 @@ public class Navigation extends Thread {
 		this.odometer = odo;
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
+		this.leftMotor.setAcceleration(ACCELERATION);
+		this.rightMotor.setAcceleration(ACCELERATION);
 	}
 
 	/**
