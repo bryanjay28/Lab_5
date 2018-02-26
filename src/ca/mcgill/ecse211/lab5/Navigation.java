@@ -19,7 +19,7 @@ public class Navigation extends Thread {
 	// set constants
 	private static final int FORWARD_SPEED = 100;
 	private static final int ROTATE_SPEED = 60;
-	public static final int ACCELERATION = 2000;  
+	public static final int ACCELERATION = 1500;  
 
 	private boolean navigate = true;
 	

@@ -10,7 +10,7 @@ public class LightLocalizer {
 
 	// vehicle constants
 	public static int ROTATION_SPEED = 100;
-	private double SENSOR_LENGTH = 11.9;
+	private double SENSOR_LENGTH = 11.85;
 
 	private Odometer odometer;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
@@ -43,7 +43,7 @@ public class LightLocalizer {
 	 * the right location
 	 */
 	public void localize(double finalX, double finalY, double finalTheta) {
-
+		odometer.setXYT(0, 0, 0.0);
 		int index = 0;
 		leftMotor.setSpeed(ROTATION_SPEED);
 		rightMotor.setSpeed(ROTATION_SPEED);
@@ -83,8 +83,7 @@ public class LightLocalizer {
 
 		// travel to one-one to correct position
 		odometer.setXYT(deltax, deltay, odometer.getXYT()[2] + 6);
-		navigation.travelTo(0, 0, false, null);
-
+		navigation.travelTo(0.0, 0.0, false, null);
 		leftMotor.setSpeed(ROTATION_SPEED / 2);
 		rightMotor.setSpeed(ROTATION_SPEED / 2);
 		this.leftMotor.setAcceleration(navigation.ACCELERATION);

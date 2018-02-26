@@ -61,7 +61,7 @@ public class Lab5 {
 		while (buttonChoice == 0) {
 			buttonChoice = Button.waitForAnyPress();
 		}
-			colourCalibrationThread.interrupt();
+		colourCalibrationThread.interrupt();
 			
 
 		// Odometer related objects
@@ -90,7 +90,6 @@ public class Lab5 {
 
 		// perform the ultrasonic localization
 		USLocalizer.localize();
-		ultrasonicSensor = null;
 		// perform the light sensor localization
 		lightLocatizer.localize(1.0,1.0,0.0);
 		
