@@ -23,7 +23,7 @@ public class Lab5 {
 
 	// Set vehicle constants
 	public static final double WHEEL_RAD = 2.1;
-	public static final double TRACK = 11.24;
+	public static final double TRACK = 11.28;
 	private static int startingCorner = 0;
 
 	// Constants for part 2

@@ -122,7 +122,22 @@ public class ColourCalibration extends Thread {
 		}
 		if (!isFieldSearching) {
 			updateDisplay();
-		}
+		} /*else {
+
+			String blockColour = "";
+
+			if (currentBlock.equals(colour.RED)) {
+				blockColour = "Red";
+			} else if (currentBlock.equals(colour.BLUE)) {
+				blockColour = "Blue";
+			} else if (currentBlock.equals(colour.YELLOW)) {
+				blockColour = "Yellow";
+			} else if (currentBlock.equals(colour.WHITE)) {
+				blockColour = "White";
+			}
+			
+			Lab5.lcd.drawString("Block Colour =" + blockColour, 0, 5);
+		}*/
 	}
 
 	/**

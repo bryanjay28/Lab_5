@@ -23,7 +23,7 @@ public class Navigation extends Thread {
 	private double currTheta;
 
 	// set constants
-	private static final int FORWARD_SPEED = 100;
+	private static final int FORWARD_SPEED = 180;
 	private static final int ROTATE_SPEED = 60;
 	public static final int ACCELERATION = 2000;
 
@@ -91,15 +91,17 @@ public class Navigation extends Thread {
 			leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
 			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
 		} else {
-			double dist;
-			while ((dist = calculateDistance(odometer.getXYT()[0], odometer.getXYT()[1], x, y)) > distanceSensorToBlock) {
+			double dist = hypot;
+			while ((dist = calculateDistance(odometer.getXYT()[0], odometer.getXYT()[1], x,
+					y)) > distanceSensorToBlock) {
+				
 				leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, dist), true);
 				rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, dist), true);
-				// rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
-				if (blockDetected() == 1) {
-					Sound.beep();
+				if (blockDetected(search) == 1) {
 					leftMotor.stop(true);
 					rightMotor.stop(false);
+					Sound.beep();
+
 					double[] initialCoords = odometer.getXYT();
 					turnTo(Math.toRadians(odometer.getXYT()[2]) + Math.PI / 2);
 					goToBlock(search);
@@ -107,12 +109,18 @@ public class Navigation extends Thread {
 						return;
 					}
 					travelTo(initialCoords[0], initialCoords[1], false, null);
+					
+					leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), true);
+					rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), true);
+					
 					travelTo(x, y, true, search);
 					return;
-				} else if (blockDetected() == 2) {
-					Sound.beep();
+					
+				} else if (blockDetected(search) == 2) {
 					leftMotor.stop(true);
 					rightMotor.stop(false);
+					
+					Sound.beep();
 					goToBlock(search);
 					if (search.getFoundBlock()) {
 						return;
@@ -144,17 +152,19 @@ public class Navigation extends Thread {
 	private void goAround(SearchAndLocalize searcher) {
 
 		int multiplier = 0;
-		if (odometer.getXYT()[0] > searcher.lowerLeftX && odometer.getXYT()[0] < searcher.lowerLeftX + USLocalizer.TILESIZE) {
+		if (odometer.getXYT()[0] > searcher.lowerLeftX
+				&& odometer.getXYT()[0] < searcher.lowerLeftX + USLocalizer.TILESIZE) {
 			multiplier = 1;
+			
 		} else {
 			multiplier = -1;
 		}
 
-		leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, -4 * distanceSensorToBlock ), true);
+		leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, -4 * distanceSensorToBlock), true);
 		rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, -4 * distanceSensorToBlock), false);
-		
+
 		double currentHeading = odometer.getXYT()[2] * Math.PI / 180;
-		double firstTurn = currentHeading + (multiplier *  (Math.PI / 2));
+		double firstTurn = currentHeading + (multiplier * (Math.PI / 2));
 		int firstDist = 15; // distance to travel after the first turn
 		int secondDist = 20; // distance to travel after the second turn
 
@@ -175,13 +185,13 @@ public class Navigation extends Thread {
 		rightMotor.stop(false);
 	}
 
-	private int blockDetected() {
+	private int blockDetected(SearchAndLocalize searcher) {
 		/*
 		 * 0: no block 1: side block 2: front block
 		 */
 		int sideDistance = fetchUS();
 		int frontDistance = this.usLoc.fetchUS();
-		if (sideDistance < 3 * USLocalizer.TILESIZE + 5) {
+		if (sideDistance < (searcher.lowerLeftX - searcher.upperRightX)/2 * USLocalizer.TILESIZE + 5) {
 			return 1;
 		} else if (frontDistance < 5) {
 			return 2;

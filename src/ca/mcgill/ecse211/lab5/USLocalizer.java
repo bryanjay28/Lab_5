@@ -19,7 +19,7 @@ public class USLocalizer {
 	// Create a navigation
 	public Navigation navigation;
 
-	private double d = 40.0;
+	private double d = 30.0;
 	private double k = 2;
 	public static double TILESIZE = 30.48;
 
@@ -74,7 +74,7 @@ public class USLocalizer {
 	 */
 	public void localize() {
 		// if we are facing a wall we use our rising edge localization
-		if (fetchUS() < 40) {
+		if (fetchUS() < 30) {
 			localizeRisingEdge();
 		} else {
 			localizeFallingEdge();
@@ -194,8 +194,8 @@ public class USLocalizer {
 		turningAngle = deltaTheta + odometer.getXYT()[2];
 
 		// rotate robot to the theta = 0.0 and we account for small error
-		leftMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, turningAngle - 1), true);
-		rightMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, turningAngle - 1), false);
+		leftMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, turningAngle - 3), true);
+		rightMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, turningAngle - 3), false);
 
 		// set odometer to theta to starting corner
 		odometer.setXYT(startingCoordinates[0], startingCoordinates[1], 0.0);
