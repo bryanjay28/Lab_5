@@ -79,8 +79,19 @@ public class LightLocalizer {
 
 		// travel to one-one to correct position
 		odometer.setXYT(deltax + 2, deltay, odometer.getXYT()[2]);
-		this.navigation.turnTo(45);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		this.navigation.travelTo(0, 0, false, null);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.navigation.turnTo(45);
 		
 //		leftMotor.setSpeed(ROTATION_SPEED / 2);
