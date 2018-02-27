@@ -23,7 +23,7 @@ public class Lab5 {
 
 	// Set vehicle constants
 	public static final double WHEEL_RAD = 2.1;
-	public static final double TRACK = 11.24;
+	public static final double TRACK = 11.28;
 	private static int startingCorner = 0;
 
 	// Constants for part 2
@@ -94,16 +94,17 @@ public class Lab5 {
 		// perform the ultrasonic localization
 		USLocalizer.localize();
 		// perform the light sensor localization
-		lightLocatizer.localize(1.0, 1.0, 45.0);
+		lightLocatizer.localize(1.0, 1.0, 0.0);
 
 		SearchAndLocalize searcher = new SearchAndLocalize(lowerLeftX, lowerLeftY, upperRightX, upperRightY,
 				targetBlock, navigation, colourCalibration);
 
 		colourCalibration.setFlag(targetBlock);
 
-	//	searcher.fieldTest();
+		searcher.fieldTest();
 
-		while (Button.waitForAnyPress() != Button.ID_ESCAPE);
+		while (Button.waitForAnyPress() != Button.ID_ESCAPE)
+			;
 		System.exit(0);
 	}
 

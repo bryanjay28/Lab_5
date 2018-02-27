@@ -18,6 +18,8 @@ public class LightLocalizer {
 	// Instantiate the EV3 Color Sensor
 	private static final EV3ColorSensor lightSensor = new EV3ColorSensor(LocalEV3.get().getPort("S1"));
 	private float sample;
+	private float prevSample;
+	private float deltaSample;
 
 	private SensorMode idColour;
 
@@ -29,6 +31,7 @@ public class LightLocalizer {
 		this.odometer = odometer;
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
+		prevSample = 0;
 
 		idColour = lightSensor.getRedMode(); // set the sensor light to red
 		lineData = new double[4];
@@ -74,27 +77,27 @@ public class LightLocalizer {
 
 		// TODO: do those values of deltax and deltay take into account the
 		// new coordinate system where (0, 0) is the corner of the board?
-		deltax = -1 * SENSOR_LENGTH * Math.cos(thetay / 2/180*Math.PI);
-		deltay = -1 * SENSOR_LENGTH * Math.cos(thetax / 2/180*Math.PI);
+		deltax = -1 * SENSOR_LENGTH * Math.cos(Math.toRadians(thetay / 2));
+		deltay = -1 * SENSOR_LENGTH * Math.cos(Math.toRadians(thetax / 2));
 
 		// travel to one-one to correct position
 		odometer.setXYT(deltax + 2, deltay, odometer.getXYT()[2]);
-		this.navigation.turnTo(45);
 		this.navigation.travelTo(0, 0, false, null);
-		this.navigation.turnTo(45);
-		
-//		leftMotor.setSpeed(ROTATION_SPEED / 2);
-//		rightMotor.setSpeed(ROTATION_SPEED / 2);
+
+		leftMotor.setSpeed(ROTATION_SPEED / 2);
+		rightMotor.setSpeed(ROTATION_SPEED / 2);
 
 		// if we are not facing 0.0 then turn ourselves so that we are
-		
-	//	navigation.turnTo(-odometer.getXYT()[2]);
-//		if (odometer.getXYT()[2] <= 357 && odometer.getXYT()[2] >= 3) {
-//			Sound.beep();
-//			leftMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, -odometer.getXYT()[2]), true);
-//			rightMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, -odometer.getXYT()[2]), false);
-//		}
+		if (odometer.getXYT()[2] <= 357 && odometer.getXYT()[2] >= 3) {
+			Sound.beep();
+			leftMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, -odometer.getXYT()[2]), true);
+			rightMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, -odometer.getXYT()[2]), false);
+		}
+
+		leftMotor.stop(true);
+		rightMotor.stop(false);
 		odometer.setXYT(finalX * USLocalizer.TILESIZE, finalY * USLocalizer.TILESIZE, finalTheta);
+		lightSensor.close();
 
 	}
 
@@ -135,7 +138,7 @@ public class LightLocalizer {
 
 	public void moveToIntersection() {
 
-		navigation.turnTo(45);
+		navigation.turnTo(Math.PI / 4);
 
 		leftMotor.setSpeed(ROTATION_SPEED);
 		rightMotor.setSpeed(ROTATION_SPEED);
