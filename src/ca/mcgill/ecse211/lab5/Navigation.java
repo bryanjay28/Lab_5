@@ -62,124 +62,104 @@ public class Navigation extends Thread {
 	 * @param y
 	 *            Y-Coordinate
 	 */
-//	public void travelTo(double x, double y, boolean lookForBlocks, SearchAndLocalize search) {
-//
-//		/*
-//		 * The search instance of SearchAndLocalize in the parameters is only necessary
-//		 * when lookForBlocks is true. Therefore, in calls where lookForBlocks is false,
-//		 * we pass null to the search variable.
-//		 */
-//
-//		currX = odometer.getXYT()[0];
-//		currY = odometer.getXYT()[1];
-//
-//		deltaX = x - currX;
-//		deltaY = y - currY;
-//
-//		// Calculate the angle to turn around
-//		currTheta = (odometer.getXYT()[2]);
-//		double mTheta = Math.atan2(deltaX, deltaY)/Math.PI*180;
-//		double hypot = Math.hypot(deltaX, deltaY);
-//
-//		// Turn to the correct angle towards the endpoint
-//		turnTo(mTheta);
-//
-//		leftMotor.setSpeed(FORWARD_SPEED);
-//		rightMotor.setSpeed(FORWARD_SPEED);
-//
-//		if (!lookForBlocks) {
-//			// We are going to our destination without bothering to check for blocks
-//			leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
-//			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
-//			leftMotor.stop(true);
-//			rightMotor.stop(false);
-//		} else {
-//			double dist = hypot;
-//			/*
-//			 * while ((dist = calculateDistance(odometer.getXYT()[0], odometer.getXYT()[1],
-//			 * x, y)) > distanceSensorToBlock) {
-//			 */
-//
-//			navigating = true;
-//			leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, dist), true);
-//			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, dist), true);
-//
-//			/*
-//			 * if (blockDetected(search) == 1) { leftMotor.stop(true);
-//			 * rightMotor.stop(false); Sound.beep();
-//			 * 
-//			 * double[] initialCoords = odometer.getXYT();
-//			 * turnTo(Math.toRadians(odometer.getXYT()[2]) + Math.PI / 2);
-//			 * goToBlock(search); if (search.getFoundBlock()) { return; }
-//			 */
-//			leftMotor.stop(true);
-//			rightMotor.stop(false);
-//			while (navigating) {
-//				if (!leftMotor.isMoving() && !rightMotor.isMoving()) {
-//					navigating = false;
-//				}
-//				
-//				if(blockDetected(search) == 1) {
-//					leftMotor.stop(true);
-//					rightMotor.stop(false);
-//					turnTo(Math.toRadians(odometer.getXYT()[2]) + 90);
-//					goToBlock(search);
-//					leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), true);
-//					rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), false);
-//					travelTo(x, y, true, search);
-//				}
-//
-//				// }
-//
-//				// travelTo(initialCoords[0], initialCoords[1], false, null);
-//
-//				// leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), true);
-//				// rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), true);
-//
-//				// travelTo(x, y, true, search);
-//				// return;
-//
-//			}
-//			// else if (blockDetected(search) == 2) {
-//			// leftMotor.stop(true);
-//			// rightMotor.stop(false);
-//			//
-//			// Sound.beep();
-//			// goToBlock(search);
-//			// if (search.getFoundBlock()) {
-//			// return;
-//			// }
-//			// goAround(search);
-//			// travelTo(x, y, true, search);
-//			// return;
-//			// }
-//		}
-//
-//		// stop vehicle
-//		setSpeeds(0,0);
-//
-//	}
-	
-	
+	public void travelTo(double x, double y, boolean lookForBlocks, SearchAndLocalize search) {
 
-	public void travelTo(double x, double y, boolean lookForBlocks, SearchAndLocalize search)  {
-		double currX = odometer.getXYT()[0];
-		double currY = odometer.getXYT()[1];
-		
-		double dx = x - currX;
-		double dy = y - currY;
-		
-		double theta = Math.atan2(dx,  dy)/Math.PI*180;
-		
-		turnTo(theta);
-		double totalDistance = Math.sqrt(Math.pow(dx, 2)+ Math.pow(dy, 2));
+		/*
+		 * The search instance of SearchAndLocalize in the parameters is only necessary
+		 * when lookForBlocks is true. Therefore, in calls where lookForBlocks is false,
+		 * we pass null to the search variable.
+		 */
+
+		currX = odometer.getXYT()[0];
+		currY = odometer.getXYT()[1];
+
+		deltaX = x - currX;
+		deltaY = y - currY;
+
+		// Calculate the angle to turn around
+		currTheta = (odometer.getXYT()[2]);
+		double mTheta = Math.atan2(deltaX, deltaY)/Math.PI*180;
+		double hypot = Math.hypot(deltaX, deltaY);
+
+		// Turn to the correct angle towards the endpoint
+		turnTo(mTheta);
+
 		leftMotor.setSpeed(FORWARD_SPEED);
 		rightMotor.setSpeed(FORWARD_SPEED);
-		leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, totalDistance), true);
-		rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, totalDistance), false);
+
+		if (!lookForBlocks) {
+			// We are going to our destination without bothering to check for blocks
+			leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
+			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
+			leftMotor.stop(true);
+			rightMotor.stop(false);
+		} else {
+			double dist = hypot;
+			/*
+			 * while ((dist = calculateDistance(odometer.getXYT()[0], odometer.getXYT()[1],
+			 * x, y)) > distanceSensorToBlock) {
+			 */
+
+			navigating = true;
+			leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, dist), true);
+			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, dist), true);
+
+			/*
+			 * if (blockDetected(search) == 1) { leftMotor.stop(true);
+			 * rightMotor.stop(false); Sound.beep();
+			 * 
+			 * double[] initialCoords = odometer.getXYT();
+			 * turnTo(Math.toRadians(odometer.getXYT()[2]) + Math.PI / 2);
+			 * goToBlock(search); if (search.getFoundBlock()) { return; }
+			 */
+			leftMotor.stop(true);
+			rightMotor.stop(false);
+			while (navigating) {
+				if (!leftMotor.isMoving() && !rightMotor.isMoving()) {
+					navigating = false;
+				}
+				
+				if(blockDetected(search) == 1) {
+					leftMotor.stop(true);
+					rightMotor.stop(false);
+					turnTo(Math.toRadians(odometer.getXYT()[2]) + 90);
+					goToBlock(search);
+					leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), true);
+					rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), false);
+					travelTo(x, y, true, search);
+				}
+
+				// }
+
+				// travelTo(initialCoords[0], initialCoords[1], false, null);
+
+				// leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), true);
+				// rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), true);
+
+				// travelTo(x, y, true, search);
+				// return;
+
+			}
+			// else if (blockDetected(search) == 2) {
+			// leftMotor.stop(true);
+			// rightMotor.stop(false);
+			//
+			// Sound.beep();
+			// goToBlock(search);
+			// if (search.getFoundBlock()) {
+			// return;
+			// }
+			// goAround(search);
+			// travelTo(x, y, true, search);
+			// return;
+			// }
+		}
+
+		// stop vehicle
 		setSpeeds(0,0);
+
 	}
-	
+
 	private void goToBlock(SearchAndLocalize searcher) {
 		int dist = this.usLoc.fetchUS();
 		if (dist > distanceSensorToBlock) {
