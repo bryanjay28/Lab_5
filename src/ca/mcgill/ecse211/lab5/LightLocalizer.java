@@ -50,7 +50,7 @@ public class LightLocalizer {
 
 		// ensure that we are close to origin before rotating
 		moveToIntersection();
-		
+
 		// Scan all four lines and record our angle
 		while (index < 4) {
 
@@ -75,14 +75,16 @@ public class LightLocalizer {
 		thetay = lineData[3] - lineData[1];
 		thetax = lineData[2] - lineData[0];
 
-		// TODO: do those values of deltax and deltay take into account the
-		// new coordinate system where (0, 0) is the corner of the board?
 		deltax = -1 * SENSOR_LENGTH * Math.cos(Math.toRadians(thetay / 2));
 		deltay = -1 * SENSOR_LENGTH * Math.cos(Math.toRadians(thetax / 2));
 
 		// travel to one-one to correct position
-		odometer.setXYT(deltax + 2, deltay, odometer.getXYT()[2]);
-		this.navigation.travelTo(0, 0, false, null);
+		odometer.setXYT(deltax, deltay, odometer.getXYT()[2]);
+		if (this.navigation.calculateDistance(odometer.getXYT()[2], odometer.getXYT()[1], 0, 0) > 1.5) {
+			this.navigation.travelTo(0, 0, false, null);
+		}
+
+		this.navigation.turnTo(0.0);
 
 		leftMotor.setSpeed(ROTATION_SPEED / 2);
 		rightMotor.setSpeed(ROTATION_SPEED / 2);
@@ -90,13 +92,13 @@ public class LightLocalizer {
 		// if we are not facing 0.0 then turn ourselves so that we are
 		if (odometer.getXYT()[2] <= 357 && odometer.getXYT()[2] >= 3) {
 			Sound.beep();
-			leftMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, -odometer.getXYT()[2]), true);
-			rightMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, -odometer.getXYT()[2]), false);
+			leftMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, -odometer.getXYT()[2] + 9), true);
+			rightMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, -odometer.getXYT()[2] + 9), false);
 		}
 
 		leftMotor.stop(true);
 		rightMotor.stop(false);
-		odometer.setXYT(finalX * USLocalizer.TILESIZE, finalY * USLocalizer.TILESIZE, finalTheta);
+		odometer.setXYT(finalX * USLocalizer.TILESIZE, finalY * USLocalizer.TILESIZE, finalTheta - 5);
 		lightSensor.close();
 
 	}
@@ -136,6 +138,9 @@ public class LightLocalizer {
 		return colorValue[0];
 	}
 
+	/**
+	 * Move to the first intersection on the North East of the initial square
+	 */
 	public void moveToIntersection() {
 
 		navigation.turnTo(Math.PI / 4);

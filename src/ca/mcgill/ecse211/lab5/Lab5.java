@@ -23,7 +23,7 @@ public class Lab5 {
 
 	// Set vehicle constants
 	public static final double WHEEL_RAD = 2.1;
-	public static final double TRACK = 11.28;
+	public static final double TRACK = 11.25;
 	private static int startingCorner = 0;
 
 	// Constants for part 2
@@ -33,6 +33,13 @@ public class Lab5 {
 	private static double upperRightY = 6 * USLocalizer.TILESIZE;
 	private static int targetBlock = 1;
 
+	
+	/**
+	 * Main method. Initial entry point of the code for this lab.
+	 * @param args
+	 * @throws OdometerExceptions
+	 * @throws InterruptedException
+	 */
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws OdometerExceptions, InterruptedException {
 
@@ -96,12 +103,10 @@ public class Lab5 {
 		// perform the light sensor localization
 		lightLocatizer.localize(1.0, 1.0, 0.0);
 
-		SearchAndLocalize searcher = new SearchAndLocalize(lowerLeftX, lowerLeftY, upperRightX, upperRightY,
-				targetBlock, navigation, colourCalibration);
-
-		colourCalibration.setFlag(targetBlock);
-
-		searcher.fieldTest();
+		// travel to LL
+		navigation.travelTo(lowerLeftX, lowerLeftY, false, null);
+		// travel to UR
+		navigation.travelTo(upperRightX, upperRightY, false, null);
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE)
 			;

@@ -18,7 +18,7 @@ public class Odometer extends OdometerData implements Runnable {
 	private final double WHEEL_RAD;
 
 	private static final long ODOMETER_PERIOD = 25; // odometer update period in ms
-	
+
 	private static int checks = 0;
 
 	/**
@@ -116,10 +116,10 @@ public class Odometer extends OdometerData implements Runnable {
 				double d1 = (WHEEL_RAD * Math.PI * (leftMotorTachoCount - prevlMTC)) / 180,
 						d2 = (WHEEL_RAD * Math.PI * (rightMotorTachoCount - prevrMTC)) / 180;
 				deltaTheta = (d1 - d2) / TRACK;
-				double newHeading = getXYT()[2] + (deltaTheta * (180.0  / Math.PI));
+				double newHeading = getXYT()[2] + (deltaTheta * (180.0 / Math.PI));
 				double displacement = (d1 + d2) / 2.00;
 				deltaX = displacement * Math.sin(newHeading * (Math.PI / 180.0));
-				deltaY = displacement * Math.cos(newHeading* (Math.PI / 180.0));
+				deltaY = displacement * Math.cos(newHeading * (Math.PI / 180.0));
 			}
 			odo.update(deltaX, deltaY, deltaTheta * (180 / Math.PI));
 

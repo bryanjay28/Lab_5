@@ -67,7 +67,7 @@ public class Navigation extends Thread {
 		/*
 		 * The search instance of SearchAndLocalize in the parameters is only necessary
 		 * when lookForBlocks is true. Therefore, in calls where lookForBlocks is false,
-		 * we pass null to the search variable.
+		 * we pass null to the search parameter.
 		 */
 
 		currX = odometer.getXYT()[0];
@@ -93,29 +93,16 @@ public class Navigation extends Thread {
 			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
 		} else {
 			double dist = hypot;
-			/*
-			 * while ((dist = calculateDistance(odometer.getXYT()[0], odometer.getXYT()[1],
-			 * x, y)) > distanceSensorToBlock) {
-			 */
-
 			navigating = true;
 			leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, dist), true);
 			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, dist), true);
 
-			/*
-			 * if (blockDetected(search) == 1) { leftMotor.stop(true);
-			 * rightMotor.stop(false); Sound.beep();
-			 * 
-			 * double[] initialCoords = odometer.getXYT();
-			 * turnTo(Math.toRadians(odometer.getXYT()[2]) + Math.PI / 2);
-			 * goToBlock(search); if (search.getFoundBlock()) { return; }
-			 */
 			while (navigating) {
 				if (!leftMotor.isMoving() && !rightMotor.isMoving()) {
 					navigating = false;
 				}
-				
-				if(blockDetected(search) == 1) {
+
+				if (blockDetected(search) == 1) {
 					leftMotor.stop(true);
 					rightMotor.stop(false);
 					turnTo(Math.toRadians(odometer.getXYT()[2]) + Math.PI / 2);
@@ -124,31 +111,7 @@ public class Navigation extends Thread {
 					rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), false);
 					travelTo(x, y, true, search);
 				}
-
-				// }
-
-				// travelTo(initialCoords[0], initialCoords[1], false, null);
-
-				// leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), true);
-				// rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), true);
-
-				// travelTo(x, y, true, search);
-				// return;
-
 			}
-			// else if (blockDetected(search) == 2) {
-			// leftMotor.stop(true);
-			// rightMotor.stop(false);
-			//
-			// Sound.beep();
-			// goToBlock(search);
-			// if (search.getFoundBlock()) {
-			// return;
-			// }
-			// goAround(search);
-			// travelTo(x, y, true, search);
-			// return;
-			// }
 		}
 
 		// stop vehicle
@@ -157,6 +120,10 @@ public class Navigation extends Thread {
 
 	}
 
+	/**
+	 * Goes to a block when it is detected in the field
+	 * @param searcher : instance of the SearchAndLocalize class
+	 */
 	private void goToBlock(SearchAndLocalize searcher) {
 		int dist = this.usLoc.fetchUS();
 		if (dist > distanceSensorToBlock) {
@@ -169,38 +136,10 @@ public class Navigation extends Thread {
 		}
 	}
 
-	// private void goAround(SearchAndLocalize searcher) {
-	//
-	// int multiplier = 0;
-	// if (odometer.getXYT()[0] > searcher.lowerLeftX
-	// && odometer.getXYT()[0] < searcher.lowerLeftX + USLocalizer.TILESIZE) {
-	// multiplier = 1;
-	//
-	// } else {
-	// multiplier = -1;
-	// }
-	//
-	// leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, -4 * distanceSensorToBlock),
-	// true);
-	// rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, -4 *
-	// distanceSensorToBlock), false);
-	//
-	// double currentHeading = odometer.getXYT()[2] * Math.PI / 180;
-	// double firstTurn = currentHeading + (multiplier * (Math.PI / 2));
-	// int firstDist = 15; // distance to travel after the first turn
-	// int secondDist = 20; // distance to travel after the second turn
-	//
-	// // turn 90 degrees anti-clockwise to circle around the block and go forward
-	// 15
-	// // cm
-	// turnTo(firstTurn);
-	// moveDistance(firstDist);
-	//
-	// // turn back to our original heading and go forward 20 cm
-	// turnTo(currentHeading);
-	// moveDistance(secondDist);
-	// }
-
+	/**
+	 * Travel distance dist.
+	 * @param dist
+	 */
 	private void moveDistance(int dist) {
 		leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, dist), true);
 		rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, dist), false);
@@ -208,6 +147,12 @@ public class Navigation extends Thread {
 		rightMotor.stop(false);
 	}
 
+	/**
+	 * Checks for the presence of a block in the sights of the sensor.
+	 * @param searcher: instance of the SearchAndLocalize class
+	 * @return 0 if no block is detected, 1 if a block is detected
+	 * on the side, 2 if a block is detected at the front
+	 */
 	private int blockDetected(SearchAndLocalize searcher) {
 		/*
 		 * 0: no block 1: side block 2: front block
@@ -291,10 +236,22 @@ public class Navigation extends Thread {
 		return convertDistance(radius, Math.PI * width * angle / 360.0);
 	}
 
+	/**
+	 * Calculates distance between (x1, y1) and (x2, y2)
+	 * @param x1 : x-coord of the current position
+	 * @param y1 : y-coord of the current position
+	 * @param x2 : x-coord of the destination
+	 * @param y2 : y-coord of the destination
+	 * @return distance between current position and destination
+	 */
 	public static double calculateDistance(double x1, double y1, double x2, double y2) {
 		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 	}
 
+	/**
+	 * Returns the distance value as seen by the side sensor.
+	 * @return
+	 */
 	public int fetchUS() {
 		sideUsDistance.fetchSample(sideUsData, 0);
 		return (int) (sideUsData[0] * 100);
