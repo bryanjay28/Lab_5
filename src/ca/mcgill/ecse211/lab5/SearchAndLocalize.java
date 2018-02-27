@@ -61,7 +61,7 @@ public class SearchAndLocalize {
 //		}
 
 		// Once the correct block is found, go to to the upper right corner.
-//		this.navigation.travelTo(this.upperRightX, this.upperRightY, false, null);
+		this.navigation.travelTo(this.upperRightX, this.upperRightY, false, null);
 	}
 
 	public void setFoundBlock(boolean newVal) {

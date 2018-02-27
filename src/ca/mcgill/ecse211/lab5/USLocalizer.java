@@ -132,8 +132,8 @@ public class USLocalizer {
 
 		// rotate robot to the theta = 0.0 using turning angle and we account for small
 		// error
-		leftMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, turningAngle - 2), true);
-		rightMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, turningAngle - 2), false);
+		leftMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, turningAngle + 2), true);
+		rightMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, turningAngle + 2), false);
 
 		// set theta to coordinate starting corner
 		odometer.setXYT(startingCoordinates[0], startingCoordinates[1], 0.0);
