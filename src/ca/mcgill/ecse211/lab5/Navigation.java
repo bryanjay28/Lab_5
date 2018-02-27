@@ -1,7 +1,12 @@
 package ca.mcgill.ecse211.lab5;
 
 import lejos.hardware.Sound;
+import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.port.Port;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
+import lejos.hardware.sensor.SensorModes;
+import lejos.robotics.SampleProvider;
 
 public class Navigation extends Thread {
 
@@ -20,11 +25,16 @@ public class Navigation extends Thread {
 	// set constants
 	private static final int FORWARD_SPEED = 100;
 	private static final int ROTATE_SPEED = 60;
-	public static final int ACCELERATION = 2000;  
+	public static final int ACCELERATION = 2000;
 
 	private boolean navigate = true;
-	
-	public USLocalizer usLoc;	
+
+	public USLocalizer usLoc;
+
+	private static final Port usSidePort = LocalEV3.get().getPort("S4");
+	private static SensorModes sideUltrasonicSensor;
+	private static SampleProvider sideUsDistance;
+	private float[] sideUsData;
 
 	// constructor for navigation
 	public Navigation(Odometer odo, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor) {
@@ -33,6 +43,12 @@ public class Navigation extends Thread {
 		this.rightMotor = rightMotor;
 		this.leftMotor.setAcceleration(ACCELERATION);
 		this.rightMotor.setAcceleration(ACCELERATION);
+
+		// usSensor is the instance
+		sideUltrasonicSensor = new EV3UltrasonicSensor(usSidePort);
+		// usDistance provides samples from this instance
+		sideUsDistance = sideUltrasonicSensor.getMode("Distance");
+		sideUsData = new float[sideUsDistance.sampleSize()];
 	}
 
 	/**
@@ -74,60 +90,61 @@ public class Navigation extends Thread {
 			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
 		} else {
 			leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
-			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
-//			while (true) {
-//				// if a block is detected (regardless of whether it's the right one)
-//				if (blockDetected()) {
-////					leftMotor.stop(true);
-////					rightMotor.stop(true);
-////					ColourCalibration cc = search.getCC();
-////					// assess the colour of the block
-////					cc.colourDetection();
-////					if (cc.isBlock()) {
-////						// if it's the right block, save that fact and return
-////						search.setFoundBlock(true);
-////						return;
-////					} else {
-////						// otherwise, reset the value of currentBlock to null
-////						cc.resetBlock();
-////						// avoid the obstacle
-////						goAround();
-////						// and start travelling back to where we were going
-////						travelTo(x, y, lookForBlocks, search);
-////						return;
-////					}
-//					Sound.beep();
-//					break;
-//				}
-//			}
+			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
+			while (true) {
+				// if a block is detected (regardless of whether it's the right one)
+				if (blockDetected()) {
+					// leftMotor.stop(true);
+					// rightMotor.stop(true);
+					// ColourCalibration cc = search.getCC();
+					// // assess the colour of the block
+					// cc.colourDetection();
+					// if (cc.isBlock()) {
+					// // if it's the right block, save that fact and return
+					// search.setFoundBlock(true);
+					// return;
+					// } else {
+					// // otherwise, reset the value of currentBlock to null
+					// cc.resetBlock();
+					// // avoid the obstacle
+					// goAround();
+					// // and start travelling back to where we were going
+					// travelTo(x, y, lookForBlocks, search);
+					// return;
+					// }
+					Sound.beep();
+					break;
+				}
+			}
 		}
 		// stop vehicle
 		leftMotor.stop(true);
 		rightMotor.stop(false);
 	}
-	
+
 	private void goAround() {
-		
+
 		/*
-		 * TODO: Add code here so that if the robot is on the left edge of the grid,
-		 * it turns 90 degrees clockwise instead of anti-clockwise 
-		 * to avoid falling from the grid floor.
+		 * TODO: Add code here so that if the robot is on the left edge of the grid, it
+		 * turns 90 degrees clockwise instead of anti-clockwise to avoid falling from
+		 * the grid floor.
 		 */
-		
+
 		double currentHeading = odometer.getXYT()[2] * Math.PI / 180;
 		double firstTurn = currentHeading - (Math.PI / 2);
 		int firstDist = 15; // distance to travel after the first turn
 		int secondDist = 20; // distance to travel after the second turn
-		
-		// turn 90 degrees anti-clockwise to circle around the block and go forward 15 cm
+
+		// turn 90 degrees anti-clockwise to circle around the block and go forward 15
+		// cm
 		turnTo(firstTurn);
 		moveDistance(firstDist);
-		
+
 		// turn back to our original heading and go forward 20 cm
 		turnTo(currentHeading);
 		moveDistance(secondDist);
 	}
-	
+
 	private void moveDistance(int dist) {
 		leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, dist), true);
 		rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, dist), false);
@@ -136,8 +153,8 @@ public class Navigation extends Thread {
 	}
 
 	private boolean blockDetected() {
-		int distance = this.usLoc.fetchUS();
-		return distance < 5;
+		int distance = fetchUS();
+		return distance < 3 * USLocalizer.TILESIZE + 5;
 	}
 
 	/**
@@ -211,5 +228,10 @@ public class Navigation extends Thread {
 
 	public static double calculateDistance(double x1, double y1, double x2, double y2) {
 		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+	}
+
+	public int fetchUS() {
+		sideUsDistance.fetchSample(sideUsData, 0);
+		return (int) (sideUsData[0] * 100);
 	}
 }

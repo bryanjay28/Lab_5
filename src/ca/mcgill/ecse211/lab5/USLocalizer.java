@@ -121,8 +121,6 @@ public class USLocalizer {
 		Sound.buzz();
 		angleB = odometer.getXYT()[2];
 
-		
-
 		// calculate angle of rotation
 		if (angleA < angleB) {
 			deltaTheta = 45 - (angleA + angleB) / 2 + 180;
@@ -134,8 +132,8 @@ public class USLocalizer {
 
 		// rotate robot to the theta = 0.0 using turning angle and we account for small
 		// error
-		leftMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, turningAngle - 6), true);
-		rightMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, turningAngle - 6), false);
+		leftMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, turningAngle - 2), true);
+		rightMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, turningAngle - 2), false);
 
 		// set theta to coordinate starting corner
 		odometer.setXYT(startingCoordinates[0], startingCoordinates[1], 0.0);
@@ -178,7 +176,7 @@ public class USLocalizer {
 		angleB = odometer.getXYT()[2];
 
 		leftMotor.stop(true);
-		rightMotor.stop();
+		rightMotor.stop(false);
 
 		// calculate angle of rotation
 		if (angleA < angleB) {

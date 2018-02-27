@@ -58,11 +58,6 @@ public class SearchAndLocalize {
 		this.navigation.travelTo(this.upperRightX, this.upperRightY, false, null);
 	}
 
-	private double switchXValue(double x) {
-		// Returns llx if x == urx, returns urx if x == llx
-		return this.lowerLeftX + this.upperRightX - x;
-	}
-
 	public void setFoundBlock(boolean newVal) {
 		this.foundBlock = newVal;
 	}
@@ -71,9 +66,9 @@ public class SearchAndLocalize {
 		
 		this.destinations = new double[4][2];
 		for (int i = 0; i < this.destinations.length; i++) {
-			this.destinations[i] = getValue(i);
+			this.destinations[i][0] = getValue(i)[0];
+			this.destinations[i][1] = getValue(i)[1];
 		}
-		
 		
 	}
 

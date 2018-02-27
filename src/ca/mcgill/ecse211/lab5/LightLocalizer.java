@@ -98,7 +98,7 @@ public class LightLocalizer {
 
 		leftMotor.stop(true);
 		rightMotor.stop(false);
-		odometer.setXYT(finalX, finalY, finalTheta);
+		odometer.setXYT(finalX * USLocalizer.TILESIZE, finalY * USLocalizer.TILESIZE, finalTheta);
 		lightSensor.close();
 
 	}
