@@ -24,8 +24,6 @@ public class SearchAndLocalize {
 
 		this.colourCalib = cc;
 
-		int widthOfSearchArea = (int) ((urx - llx) / USLocalizer.TILESIZE);
-
 		/*
 		 * The destinations array contains the list of target points that the robot will
 		 * travel to one after the other in its quest to cover the entire grid.

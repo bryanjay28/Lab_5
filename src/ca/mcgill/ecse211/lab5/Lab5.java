@@ -91,6 +91,8 @@ public class Lab5 {
 		ultrasonicSensor = null;
 		// perform the light sensor localization
 		lightLocatizer.localize(1.0, 1.0, 0.0);
+		
+		Thread.sleep(5000);
 
 		// Recreating the thread because its behaviour will be different
 		// It will check for colours upon request instead of continually

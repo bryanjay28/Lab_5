@@ -83,6 +83,7 @@ public class LightLocalizer {
 
 		// travel to one-one to correct position
 		odometer.setXYT(deltax, deltay, odometer.getXYT()[2] + 6);
+		this.navigation.travelTo(0, 0, false, null);
 
 		leftMotor.setSpeed(ROTATION_SPEED / 2);
 		rightMotor.setSpeed(ROTATION_SPEED / 2);
@@ -156,7 +157,7 @@ public class LightLocalizer {
 
 		}
 		leftMotor.stop(true);
-		rightMotor.stop();
+		rightMotor.stop(false);
 		Sound.beep();
 
 		// Move backwards so our origin is close to origin
