@@ -97,7 +97,7 @@ public class Lab5 {
 		ultrasonicSensor = null;
 		// perform the light sensor localization
 		lightLocatizer.localize(1.0, 1.0, 0.0);
-
+		
 		Thread.sleep(5000);
 
 		SearchAndLocalize searcher = new SearchAndLocalize(lowerLeftX, lowerLeftY, upperRightX, upperRightY,

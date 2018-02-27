@@ -68,8 +68,8 @@ public class ColourCalibration extends Thread {
 
 			if (blockColour != "") {
 				// If the value of blockColour has changed
-				Lab5.lcd.drawString("Block Colour =", 0, 0);
-				Lab5.lcd.drawString(blockColour, 0, 1);
+				Lab5.lcd.drawString("Block Colour =", 0, 5);
+				Lab5.lcd.drawString(blockColour, 0, 6);
 			}
 		} else {
 			Lab5.lcd.clear();
@@ -120,24 +120,24 @@ public class ColourCalibration extends Thread {
 				&& Math.abs(RGB[2] - RGB_white[2]) <= 2 * std_white[2]) {
 			currentBlock = colour.WHITE;
 		}
-		if (!isFieldSearching) {
-			updateDisplay();
-		} /*else {
-
-			String blockColour = "";
-
-			if (currentBlock.equals(colour.RED)) {
-				blockColour = "Red";
-			} else if (currentBlock.equals(colour.BLUE)) {
-				blockColour = "Blue";
-			} else if (currentBlock.equals(colour.YELLOW)) {
-				blockColour = "Yellow";
-			} else if (currentBlock.equals(colour.WHITE)) {
-				blockColour = "White";
-			}
-			
-			Lab5.lcd.drawString("Block Colour =" + blockColour, 0, 5);
-		}*/
+//		if (!isFieldSearching) {
+//			updateDisplay();
+//		} else {
+//
+//			String blockColour = "";
+//
+//			if (currentBlock.equals(colour.RED)) {
+//				blockColour = "Red";
+//			} else if (currentBlock.equals(colour.BLUE)) {
+//				blockColour = "Blue";
+//			} else if (currentBlock.equals(colour.YELLOW)) {
+//				blockColour = "Yellow";
+//			} else if (currentBlock.equals(colour.WHITE)) {
+//				blockColour = "White";
+//			}
+//			
+//			Lab5.lcd.drawString("Block Colour =" + blockColour, 0, 5);
+//		}
 	}
 
 	/**

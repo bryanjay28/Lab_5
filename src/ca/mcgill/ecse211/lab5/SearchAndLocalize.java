@@ -40,8 +40,8 @@ public class SearchAndLocalize {
 		// Travel to the lower-left corner
 		this.navigation.travelTo(this.lowerLeftX, this.lowerLeftY, false, null);
 		Sound.beep();
-		this.navigation.travelTo(this.lowerLeftX, this.lowerLeftY, false, null);
-		Sound.beep();
+//		this.navigation.travelTo(this.lowerLeftX, this.lowerLeftY, false, null);
+//		Sound.beep();
 		
 
 		/*
