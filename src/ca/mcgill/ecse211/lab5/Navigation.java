@@ -90,10 +90,11 @@ public class Navigation extends Thread {
 			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
 		} else {
 			leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
-			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
-			while (true) {
+//			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
+			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
+//			while (true) {
 				// if a block is detected (regardless of whether it's the right one)
-				if (blockDetected()) {
+//				if (blockDetected()) {
 					// leftMotor.stop(true);
 					// rightMotor.stop(true);
 					// ColourCalibration cc = search.getCC();
@@ -112,10 +113,14 @@ public class Navigation extends Thread {
 					// travelTo(x, y, lookForBlocks, search);
 					// return;
 					// }
-					Sound.beep();
-					break;
-				}
-			}
+//					Sound.beep();
+//					break;
+//				}
+//			}
+//			if (calculateDistance(odometer.getXYT()[0], odometer.getXYT()[1], x, y) > 2) {
+//				travelTo(x, y, true, search);
+//				return;
+//			}
 		}
 		// stop vehicle
 		leftMotor.stop(true);

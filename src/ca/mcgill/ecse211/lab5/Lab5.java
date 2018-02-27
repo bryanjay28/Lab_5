@@ -1,6 +1,7 @@
 package ca.mcgill.ecse211.lab5;
 
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -60,7 +61,12 @@ public class Lab5 {
 		while (buttonChoice == 0) {
 			buttonChoice = Button.waitForAnyPress();
 		}
-		colourCalibrationThread.interrupt();
+
+		colourCalibration.isFieldSearching = true;
+
+		do {
+			colourCalibrationThread.interrupt();
+		} while (!colourCalibrationThread.isInterrupted());
 
 		// Odometer related objects
 		Odometer odometer = Odometer.getOdometer(leftMotor, rightMotor, TRACK, WHEEL_RAD);
@@ -91,13 +97,12 @@ public class Lab5 {
 		ultrasonicSensor = null;
 		// perform the light sensor localization
 		lightLocatizer.localize(1.0, 1.0, 0.0);
-		
+
 		Thread.sleep(5000);
 
 		// Recreating the thread because its behaviour will be different
 		// It will check for colours upon request instead of continually
 		colourCalibrationThread = new Thread(colourCalibration);
-		colourCalibration.isFieldSearching = true;
 
 		colourCalibrationThread.start();
 
