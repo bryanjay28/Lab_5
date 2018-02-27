@@ -3,8 +3,8 @@ package ca.mcgill.ecse211.lab5;
 import lejos.hardware.Sound;
 
 public class SearchAndLocalize {
-	private double lowerLeftX, lowerLeftY;
-	private double upperRightX, upperRightY;
+	public double lowerLeftX, lowerLeftY;
+	public double upperRightX, upperRightY;
 	private int targetBlock;
 	private Navigation navigation;
 	private boolean foundBlock = false;
@@ -40,6 +40,9 @@ public class SearchAndLocalize {
 		// Travel to the lower-left corner
 		this.navigation.travelTo(this.lowerLeftX, this.lowerLeftY, false, null);
 		Sound.beep();
+		this.navigation.travelTo(this.lowerLeftX, this.lowerLeftY, false, null);
+		Sound.beep();
+		
 
 		/*
 		 * Travel to each destination one by one, stopping the for loop if the correct
@@ -102,5 +105,9 @@ public class SearchAndLocalize {
 
 	public ColourCalibration getCC() {
 		return this.colourCalib;
+	}
+	
+	public boolean getFoundBlock() {
+		return this.foundBlock;
 	}
 }

@@ -23,7 +23,7 @@ public class Lab5 {
 
 	// Set vehicle constants
 	public static final double WHEEL_RAD = 2.1;
-	public static final double TRACK = 11.25;
+	public static final double TRACK = 11.24;
 	private static int startingCorner = 0;
 
 	// Constants for part 2
@@ -99,12 +99,6 @@ public class Lab5 {
 		lightLocatizer.localize(1.0, 1.0, 0.0);
 
 		Thread.sleep(5000);
-
-		// Recreating the thread because its behaviour will be different
-		// It will check for colours upon request instead of continually
-		colourCalibrationThread = new Thread(colourCalibration);
-
-		colourCalibrationThread.start();
 
 		SearchAndLocalize searcher = new SearchAndLocalize(lowerLeftX, lowerLeftY, upperRightX, upperRightY,
 				targetBlock, navigation, colourCalibration);

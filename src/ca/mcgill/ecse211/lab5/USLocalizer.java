@@ -100,7 +100,7 @@ public class USLocalizer {
 			rightMotor.forward();
 		}
 		leftMotor.stop(true);
-		rightMotor.stop(true);
+		rightMotor.stop(false);
 		Sound.buzz();
 		// record angle
 		angleA = odometer.getXYT()[2];
@@ -117,7 +117,7 @@ public class USLocalizer {
 			rightMotor.backward();
 		}
 		leftMotor.stop(true);
-		rightMotor.stop(true);
+		rightMotor.stop(false);
 		Sound.buzz();
 		angleB = odometer.getXYT()[2];
 
@@ -157,6 +157,9 @@ public class USLocalizer {
 			leftMotor.backward();
 			rightMotor.forward();
 		}
+		leftMotor.stop(true);
+		rightMotor.stop(false);
+		
 		Sound.buzz();
 		// record angle
 		angleA = odometer.getXYT()[2];
@@ -172,11 +175,13 @@ public class USLocalizer {
 			leftMotor.forward();
 			rightMotor.backward();
 		}
-		Sound.buzz();
-		angleB = odometer.getXYT()[2];
-
 		leftMotor.stop(true);
 		rightMotor.stop(false);
+		Sound.buzz();
+		
+		angleB = odometer.getXYT()[2];
+
+		
 
 		// calculate angle of rotation
 		if (angleA < angleB) {

@@ -60,7 +60,6 @@ public class LightLocalizer {
 			sample = fetchSample();
 
 			if (sample < 0.38) {
-
 				lineData[index] = odometer.getXYT()[2];
 				Sound.beepSequenceUp();
 				index++;
@@ -82,16 +81,14 @@ public class LightLocalizer {
 		deltay = -1 * SENSOR_LENGTH * Math.cos(Math.toRadians(thetax / 2));
 
 		// travel to one-one to correct position
-		odometer.setXYT(deltax, deltay, odometer.getXYT()[2] + 6);
+		odometer.setXYT(deltax, deltay, odometer.getXYT()[2]);
 		this.navigation.travelTo(0, 0, false, null);
 
 		leftMotor.setSpeed(ROTATION_SPEED / 2);
 		rightMotor.setSpeed(ROTATION_SPEED / 2);
-		this.leftMotor.setAcceleration(navigation.ACCELERATION);
-		this.rightMotor.setAcceleration(navigation.ACCELERATION);
 
 		// if we are not facing 0.0 then turn ourselves so that we are
-		if (odometer.getXYT()[2] <= 350 && odometer.getXYT()[2] >= 10.0) {
+		if (odometer.getXYT()[2] <= 357 && odometer.getXYT()[2] >= 3) {
 			Sound.beep();
 			leftMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, -odometer.getXYT()[2]), true);
 			rightMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, -odometer.getXYT()[2]), false);
@@ -161,8 +158,8 @@ public class LightLocalizer {
 		Sound.beep();
 
 		// Move backwards so our origin is close to origin
-		leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, -12), true);
-		rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, -12), false);
+		leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, -10), true);
+		rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, -10), false);
 
 	}
 }
