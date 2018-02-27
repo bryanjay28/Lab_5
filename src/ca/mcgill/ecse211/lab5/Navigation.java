@@ -25,7 +25,7 @@ public class Navigation extends Thread {
 	// set constants
 	private static final int FORWARD_SPEED = 180;
 	private static final int ROTATE_SPEED = 60;
-	public static final int ACCELERATION = 2000;
+	public static final int ACCELERATION = 500;
 
 	private boolean navigate = true;
 	private boolean navigating = false;
@@ -77,8 +77,8 @@ public class Navigation extends Thread {
 		deltaY = y - currY;
 
 		// Calculate the angle to turn around
-		currTheta = (odometer.getXYT()[2]) * Math.PI / 180;
-		double mTheta = Math.atan2(deltaX, deltaY) - currTheta;
+		currTheta = (odometer.getXYT()[2]);
+		double mTheta = Math.atan2(deltaX, deltaY)/Math.PI*180;
 		double hypot = Math.hypot(deltaX, deltaY);
 
 		// Turn to the correct angle towards the endpoint
@@ -91,6 +91,8 @@ public class Navigation extends Thread {
 			// We are going to our destination without bothering to check for blocks
 			leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), true);
 			rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, hypot), false);
+			leftMotor.stop(true);
+			rightMotor.stop(false);
 		} else {
 			double dist = hypot;
 			/*
@@ -110,6 +112,8 @@ public class Navigation extends Thread {
 			 * turnTo(Math.toRadians(odometer.getXYT()[2]) + Math.PI / 2);
 			 * goToBlock(search); if (search.getFoundBlock()) { return; }
 			 */
+			leftMotor.stop(true);
+			rightMotor.stop(false);
 			while (navigating) {
 				if (!leftMotor.isMoving() && !rightMotor.isMoving()) {
 					navigating = false;
@@ -118,7 +122,7 @@ public class Navigation extends Thread {
 				if(blockDetected(search) == 1) {
 					leftMotor.stop(true);
 					rightMotor.stop(false);
-					turnTo(Math.toRadians(odometer.getXYT()[2]) + Math.PI / 2);
+					turnTo(Math.toRadians(odometer.getXYT()[2]) + 90);
 					goToBlock(search);
 					leftMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), true);
 					rightMotor.rotate(convertDistance(Lab5.WHEEL_RAD, 10), false);
@@ -152,8 +156,7 @@ public class Navigation extends Thread {
 		}
 
 		// stop vehicle
-		leftMotor.stop(true);
-		rightMotor.stop(false);
+		setSpeeds(0,0);
 
 	}
 
@@ -214,7 +217,7 @@ public class Navigation extends Thread {
 		 */
 		int sideDistance = fetchUS();
 		int frontDistance = this.usLoc.fetchUS();
-		if (sideDistance < (searcher.lowerLeftX - searcher.upperRightX) / 2 * USLocalizer.TILESIZE + 5) {
+		if (sideDistance < Math.abs(searcher.lowerLeftX - searcher.upperRightX) / 2 * USLocalizer.TILESIZE + 5) {
 			return 1;
 		} else if (frontDistance < 5) {
 			return 2;
@@ -227,13 +230,13 @@ public class Navigation extends Thread {
 	 * 
 	 * @param theta
 	 */
-	public void turnTo(double theta) {
+	public void turnTo(double degrees) {
 
 		// ensures minimum angle for turning
-		if (theta > Math.PI) {
-			theta -= 2 * Math.PI;
-		} else if (theta < -Math.PI) {
-			theta += 2 * Math.PI;
+		if (degrees > 180) {
+			degrees -= 360;
+		} else if (degrees < -180) {
+			degrees += 360;
 		}
 
 		// set Speed
@@ -243,17 +246,16 @@ public class Navigation extends Thread {
 		// rotate motors at set speed
 
 		// if angle is negative, turn to the left
-		if (theta < 0) {
-			leftMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, -(theta * 180) / Math.PI), true);
-			rightMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, -(theta * 180) / Math.PI), false);
+		if (degrees < 0) {
+			leftMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, degrees), true);
+			rightMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, degrees), false);
 
 		} else {
 			// angle is positive, turn to the right
-			leftMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, (theta * 180) / Math.PI), true);
-			rightMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, (theta * 180) / Math.PI), false);
+			leftMotor.rotate(convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, degrees), true);
+			rightMotor.rotate(-convertAngle(Lab5.WHEEL_RAD, Lab5.TRACK, degrees), false);
 		}
-		leftMotor.stop(true);
-		rightMotor.stop(false);
+		setSpeeds(0,0);
 	}
 
 	/**
@@ -291,6 +293,16 @@ public class Navigation extends Thread {
 		return convertDistance(radius, Math.PI * width * angle / 360.0);
 	}
 
+
+	public void setSpeeds(int leftSpeed, int rightSpeed) {
+		this.leftMotor.setSpeed(leftSpeed);
+		this.rightMotor.setSpeed(rightSpeed);
+		if (leftSpeed == 0)
+			this.leftMotor.stop(true);
+		if (rightSpeed == 0)
+			this.rightMotor.stop(false);
+	}
+	
 	public static double calculateDistance(double x1, double y1, double x2, double y2) {
 		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 	}

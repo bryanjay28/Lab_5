@@ -48,17 +48,18 @@ public class SearchAndLocalize {
 		 * Travel to each destination one by one, stopping the for loop if the correct
 		 * block was found
 		 */
-		this.navigation.travelTo(this.lowerLeftX, this.upperRightY, true, this);
-		this.navigation.travelTo(this.upperRightX, this.upperRightY, true, this);
-		this.navigation.travelTo(this.upperRightX, this.lowerLeftY, true, this);
-		this.navigation.travelTo(this.lowerLeftX, this.lowerLeftY, true, this);
+//		this.navigation.travelTo(this.lowerLeftX, this.upperRightY, false, this);
+//		
+//		this.navigation.travelTo(this.upperRightX, this.upperRightY, false, this);
+//		this.navigation.travelTo(this.upperRightX, this.lowerLeftY, false, this);
+//		this.navigation.travelTo(this.lowerLeftX, this.lowerLeftY, false, this);
 		
-//		for (double[] dest : destinations) {
-//			if (foundBlock) {
-//				break;
-//			}
-//			this.navigation.travelTo(dest[0], dest[1], true, this);
-//		}
+		for (double[] dest : destinations) {
+			if (foundBlock) {
+				break;
+			}
+			this.navigation.travelTo(dest[0], dest[1], true, this);
+		}
 
 		// Once the correct block is found, go to to the upper right corner.
 		this.navigation.travelTo(this.upperRightX, this.upperRightY, false, null);
