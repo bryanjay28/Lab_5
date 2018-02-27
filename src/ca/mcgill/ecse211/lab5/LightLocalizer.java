@@ -81,7 +81,7 @@ public class LightLocalizer {
 		deltay = -1 * SENSOR_LENGTH * Math.cos(Math.toRadians(thetax / 2));
 
 		// travel to one-one to correct position
-		odometer.setXYT(deltax + 5, deltay, odometer.getXYT()[2]);
+		odometer.setXYT(deltax + 3, deltay, odometer.getXYT()[2]);
 		this.navigation.travelTo(0, 0, false, null);
 
 		leftMotor.setSpeed(ROTATION_SPEED / 2);
