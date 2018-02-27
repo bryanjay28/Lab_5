@@ -116,19 +116,20 @@ public class Navigation extends Thread {
 					travelTo(x, y, true, search);
 					return;
 					
-				} else if (blockDetected(search) == 2) {
-					leftMotor.stop(true);
-					rightMotor.stop(false);
-					
-					Sound.beep();
-					goToBlock(search);
-					if (search.getFoundBlock()) {
-						return;
-					}
-					goAround(search);
-					travelTo(x, y, true, search);
-					return;
 				}
+//				else if (blockDetected(search) == 2) {
+//					leftMotor.stop(true);
+//					rightMotor.stop(false);
+//					
+//					Sound.beep();
+//					goToBlock(search);
+//					if (search.getFoundBlock()) {
+//						return;
+//					}
+//					goAround(search);
+//					travelTo(x, y, true, search);
+//					return;
+//				}
 			}
 
 		}
@@ -148,7 +149,32 @@ public class Navigation extends Thread {
 			searcher.setFoundBlock(true);
 		}
 	}
-
+//	private void goAround2(SearchAndLocalize searcher) {
+//          0-------1-------2
+//		    |               |
+//		    |               |
+//		    3               4
+//		    |               |
+//         	|               |	
+//		    5-------6-------7
+//		
+//		int location = whereAmI(searcher);
+//		
+//	}
+//	
+//	private int whereAmI(SearchAndLocalize searcher) {
+//		int location = -1;
+//		double x = odometer.getXYT()[0];
+//		double y = odometer.getXYT()[1];
+//		if (y <= searcher.lowerLeftY + 3 || y >= searcher.lowerLeftY - 3) {
+//			location = 5;
+//		}
+//		els
+//		
+//		
+//		return location;
+//	}
+	
 	private void goAround(SearchAndLocalize searcher) {
 
 		int multiplier = 0;
