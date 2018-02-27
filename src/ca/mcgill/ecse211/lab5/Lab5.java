@@ -42,7 +42,6 @@ public class Lab5 {
 			// clear the display
 			lcd.clear();
 
-			//
 			lcd.drawString("Press any button", 0, 0);
 			lcd.drawString("to start color", 0, 1);
 			lcd.drawString("classification", 0, 2);
@@ -94,11 +93,8 @@ public class Lab5 {
 
 		// perform the ultrasonic localization
 		USLocalizer.localize();
-		ultrasonicSensor = null;
 		// perform the light sensor localization
 		lightLocatizer.localize(1.0, 1.0, 0.0);
-		
-		Thread.sleep(5000);
 
 		SearchAndLocalize searcher = new SearchAndLocalize(lowerLeftX, lowerLeftY, upperRightX, upperRightY,
 				targetBlock, navigation, colourCalibration);
