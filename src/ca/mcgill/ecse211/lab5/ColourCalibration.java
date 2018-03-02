@@ -31,16 +31,12 @@ public class ColourCalibration extends Thread {
 		BLUE, RED, YELLOW, WHITE
 	}
 
-	/**
-	 * Constructor class.
-	 */
 	public ColourCalibration() {
 		lightSensor.setCurrentMode("Red"); // set the sensor floodlight to white
 	}
-
-	/**
-	 * run method. Entry point for the ColourCalibration thread.
-	 */
+/**
+ * Main running function that searches for the colour
+ */
 	public void run() {
 		if (!isFieldSearching) {
 			// first part of the demo, continuously search for a color
@@ -126,6 +122,24 @@ public class ColourCalibration extends Thread {
 				&& Math.abs(RGB[2] - RGB_white[2]) <= 2 * std_white[2]) {
 			currentBlock = colour.WHITE;
 		}
+		if (!isFieldSearching) {
+			updateDisplay();
+		} else {
+
+			String blockColour = "";
+
+			if (currentBlock.equals(colour.RED)) {
+				blockColour = "Red";
+			} else if (currentBlock.equals(colour.BLUE)) {
+				blockColour = "Blue";
+			} else if (currentBlock.equals(colour.YELLOW)) {
+				blockColour = "Yellow";
+			} else if (currentBlock.equals(colour.WHITE)) {
+				blockColour = "White";
+			}
+			
+			Lab5.lcd.drawString("Block Colour =" + blockColour, 0, 5);
+		}
 	}
 
 	/**
@@ -140,25 +154,22 @@ public class ColourCalibration extends Thread {
 		colorSensor.fetchSample(RGB, 0);
 		return RGB;
 	}
-
 	/**
-	 * Return the value of currentBlock
+	 * Returns the colour of the recent detected block
 	 * @return
 	 */
 	public colour getCurrentBlock() {
 		return currentBlock;
 	}
-
 	/**
-	 * Set currentBlock to null.
+	 * Deletes the most recently detected block data, resets to null
 	 */
 	public void resetBlock() {
 		currentBlock = null;
 	}
-
 	/**
-	 * Set the flag (i.e. target block) to f
-	 * @param f : value of the targetBlock
+	 * Sets which colour to look for
+	 * @param f Colour code Integer
 	 */
 	public void setFlag(int f) {
 		this.flag = colour.values()[f];

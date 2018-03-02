@@ -27,11 +27,11 @@ public class Lab5 {
 	private static int startingCorner = 0;
 
 	// Constants for part 2
-	private static double lowerLeftX = 3 * USLocalizer.TILESIZE;
+	private static double lowerLeftX = 2 * USLocalizer.TILESIZE;
 	private static double lowerLeftY = 3 * USLocalizer.TILESIZE;
 	private static double upperRightX = 6 * USLocalizer.TILESIZE;
-	private static double upperRightY = 6 * USLocalizer.TILESIZE;
-	private static int targetBlock = 1;
+	private static double upperRightY = 7 * USLocalizer.TILESIZE;
+	private static int targetBlock = 3;
 
 	
 	/**
